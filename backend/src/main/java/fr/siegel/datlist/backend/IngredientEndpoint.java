@@ -50,7 +50,7 @@ public class IngredientEndpoint {
         return ingredient;
     }
 
-    @ApiMethod(name = "listQuote")
+    @ApiMethod(name = "listIngredients")
     public CollectionResponse<Ingredient> listQuote(@Nullable @Named("cursor") String cursorString,
                                                     @Nullable @Named("count") Integer count) {
 
