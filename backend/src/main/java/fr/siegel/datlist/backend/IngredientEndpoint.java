@@ -26,7 +26,7 @@ import static fr.siegel.datlist.backend.OfyService.ofy;
  * An endpoint class we are exposing
  */
 @Api(
-        name = "myApi",
+        name = "ingredientEndpoint",
         version = "v1",
         namespace = @ApiNamespace(
                 ownerDomain = "backend.datlist.siegel.fr",
