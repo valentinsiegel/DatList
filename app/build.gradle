@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "fr.siegel.datlist"
-        minSdkVersion 14
+        minSdkVersion 19
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0"
+        versionName "0.05"
     }
     buildTypes {
         release {
@@ -22,6 +22,7 @@ android {
 dependencies {
     androidTestCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:22.+'
-    compile project(path: ':backend', configuration: 'android-endpoints')
     compile 'com.android.support:recyclerview-v7:+'
+    compile 'de.hdodenhof:circleimageview:1.2.1'
+    compile project(path: ':backend', configuration: 'android-endpoints')
 }

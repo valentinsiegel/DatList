@@ -25,8 +25,6 @@ import java.util.List;
 import static fr.siegel.datlist.backend.OfyService.ofy;
 import com.google.appengine.api.users.User;
 
-import sun.java2d.cmm.Profile;
-
 /**
  * An endpoint class we are exposing
  */
