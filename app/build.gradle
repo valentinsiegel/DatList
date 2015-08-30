@@ -21,6 +21,7 @@ android {
 
 dependencies {
     androidTestCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.android.support:appcompat-v7:22.+'
     compile project(path: ':backend', configuration: 'android-endpoints')
+    compile 'com.android.support:recyclerview-v7:+'
 }

@@ -1,6 +1,8 @@
 package fr.siegel.datlist.services;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import fr.siegel.datlist.adapters.IngredientsAdapter;
 import fr.siegel.datlist.backend.ingredientEndpoint.IngredientEndpoint;
 import fr.siegel.datlist.backend.ingredientEndpoint.model.Ingredient;
 
@@ -28,7 +31,7 @@ public class EndpointAsyncTask {
                     // options for running against local devappserver
                     // - 10.0.2.2 is localhost's IP address in Android emulator
                     // - turn off compression when running against local devappserver
-                    .setRootUrl("http://10.0.2.2:8080/_ah/api/")
+                    .setRootUrl("http://10.0.3.2:8080/_ah/api/")
                     .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                         @Override
                         public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
@@ -37,10 +40,10 @@ public class EndpointAsyncTask {
                     });
             // end options for devappserver
             ingredientEndpoint = builder.build();
+            }
         }
-    }
 
-    public void listIngredients() {
+    public void listIngredients(final RecyclerView recyclerView, final Context context) {
         new AsyncTask<Void, Void, List<Ingredient>>() {
 
             @Override
@@ -60,6 +63,28 @@ public class EndpointAsyncTask {
             @Override
             protected void onPostExecute(List<Ingredient> ingredients) {
                 super.onPostExecute(ingredients);
+
+                IngredientsAdapter ingredientsAdapter = new IngredientsAdapter(ingredients);
+                recyclerView.setAdapter(ingredientsAdapter);
+
+
+
+            }
+        }.execute();
+    }
+
+    public void insertIngredient(final Ingredient ingredient){
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+
+                try {
+                    ingredientEndpoint.insertIngredient(ingredient).execute();
+                    return true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
             }
         }.execute();
     }

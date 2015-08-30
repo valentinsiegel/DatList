@@ -13,14 +13,19 @@ import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.ConflictException;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.cmd.Query;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static fr.siegel.datlist.backend.OfyService.ofy;
+import com.google.appengine.api.users.User;
+
+import sun.java2d.cmm.Profile;
 
 /**
  * An endpoint class we are exposing
@@ -32,9 +37,13 @@ import static fr.siegel.datlist.backend.OfyService.ofy;
                 ownerDomain = "backend.datlist.siegel.fr",
                 ownerName = "backend.datlist.siegel.fr",
                 packagePath = ""
+
+
         )
 )
 public class IngredientEndpoint {
+
+
 
     public IngredientEndpoint() {
     }
