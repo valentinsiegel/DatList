@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/drawer_layout_list"
+            android:checked="false"
+            android:icon="@mipmap/ic_shopping_cart_black_36dp"
+            android:title="@string/drawer_layout_list" />
+
+        <item
+            android:id="@+id/drawer_layout_recipes"
+            android:checked="false"
+            android:icon="@mipmap/ic_list_black_36dp"
+            android:title="@string/drawer_layout_recipes" />
+
+        <item
+            android:id="@+id/drawer_layout_items"
+            android:checked="false"
+            android:icon="@mipmap/ic_store_black_36dp"
+            android:title="@string/drawer_layout_items" />
+    </group>
+
+    <group android:checkableBehavior="single"
+        >
+        <item
+            android:id="@+id/drawer_layout_settings"
+            android:checked="false"
+            android:icon="@mipmap/ic_settings_black_36dp"
+            android:title="@string/drawer_layout_settings" />
+    </group>
+</menu>

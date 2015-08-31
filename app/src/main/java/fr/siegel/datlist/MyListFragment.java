@@ -23,7 +23,7 @@ import fr.siegel.datlist.services.EndpointAsyncTask;
  * Use the {@link MyListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MyListFragment extends Fragment {
+public class MyListFragment extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -34,6 +34,9 @@ public class MyListFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private RecyclerView mRecyclerView;
+    private EditText mEditText;
+    private EndpointAsyncTask mEndpointAsyncTask;
 
     /**
      * Use this factory method to create a new instance of
@@ -68,7 +71,10 @@ public class MyListFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
 
         }
+
+        mEndpointAsyncTask = new EndpointAsyncTask();
     }
+
 
 
 
@@ -76,8 +82,32 @@ public class MyListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_list, container, false);
+
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycle);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mEditText = (EditText) view.findViewById(R.id.edit_text);
+
+        (view.findViewById(R.id.button_get_items)).setOnClickListener(onClickListener);
+        (view.findViewById(R.id.button_add_items)).setOnClickListener(onClickListener);
+
+        return view;
     }
+
+
+    public View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.button_get_items:
+                    mEndpointAsyncTask.listIngredients(mRecyclerView, getActivity());
+                    break;
+                case R.id.button_add_items:
+                    mEndpointAsyncTask.insertIngredient(new Ingredient().setName(String.valueOf(mEditText.getText())));
+                    break;
+            }
+        }
+    };
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

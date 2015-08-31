@@ -1,6 +1,10 @@
 package fr.siegel.datlist;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +20,7 @@ import android.widget.EditText;
 import fr.siegel.datlist.backend.ingredientEndpoint.model.Ingredient;
 import fr.siegel.datlist.services.EndpointAsyncTask;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MyListFragment.OnFragmentInteractionListener {
 
     private RecyclerView recyclerView;
     private EndpointAsyncTask endpointAsyncTask;
@@ -59,35 +63,49 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
         mDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
 
+        ((NavigationView) findViewById(R.id.navigation_view)).setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
 
-        endpointAsyncTask = new EndpointAsyncTask();
+                mDrawerLayout.closeDrawers();
+
+                switch (menuItem.getItemId()){
+                    case R.id.drawer_layout_list:
+                        return true;
+                    case R.id.drawer_layout_recipes:
+                        return true;
+                    case R.id.drawer_layout_items:
+                        // Create a new fragment and specify the planet to show based on position
+                        Fragment fragment = new MyListFragment();
+                        Bundle args = new Bundle();
+                        fragment.setArguments(args);
+                        // Insert the fragment by replacing any existing fragment
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.frame_content, fragment)
+                                .commit();
+                        return true;
+                    case R.id.drawer_layout_settings:
+                        return true;
+                    default:
+                }       return true;
+            }
+        });
+
+
+
 
     }
 
     public void initView() {
-        recyclerView = (RecyclerView) findViewById(R.id.recycle);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        editText = (EditText) findViewById(R.id.edit_text);
+
     }
 
     public void initEvents() {
-        (findViewById(R.id.button_get_items)).setOnClickListener(onClickListener);
-        (findViewById(R.id.button_add_items)).setOnClickListener(onClickListener);
+
     }
 
-    public View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.button_get_items:
-                    endpointAsyncTask.listIngredients(recyclerView, getBaseContext());
-                    break;
-                case R.id.button_add_items:
-                    endpointAsyncTask.insertIngredient(new Ingredient().setName(String.valueOf(editText.getText())));
-                    break;
-            }
-        }
-    };
+
 
 
     @Override
@@ -104,5 +122,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
