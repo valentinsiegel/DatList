@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 
-import fr.siegel.datlist.backend.ingredientEndpoint.model.Ingredient;
 import fr.siegel.datlist.services.EndpointAsyncTask;
 
 public class MainActivity extends AppCompatActivity implements MyListFragment.OnFragmentInteractionListener {

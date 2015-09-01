@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import fr.siegel.datlist.backend.ingredientEndpoint.model.Ingredient;
+import fr.siegel.datlist.backend.datListEndpoint.model.Ingredient;
 import fr.siegel.datlist.services.EndpointAsyncTask;
 
 

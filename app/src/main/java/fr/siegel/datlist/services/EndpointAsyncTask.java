@@ -14,19 +14,19 @@ import java.util.Collections;
 import java.util.List;
 
 import fr.siegel.datlist.adapters.IngredientsAdapter;
-import fr.siegel.datlist.backend.ingredientEndpoint.IngredientEndpoint;
-import fr.siegel.datlist.backend.ingredientEndpoint.model.Ingredient;
+import fr.siegel.datlist.backend.datListEndpoint.DatListEndpoint;
+import fr.siegel.datlist.backend.datListEndpoint.model.Ingredient;
 
 /**
  * Created by Val on 23/08/15.
  */
 public class EndpointAsyncTask {
 
-    private static IngredientEndpoint ingredientEndpoint = null;
+    private static DatListEndpoint mDatListEndpoint = null;
 
     public EndpointAsyncTask() {
-        if (ingredientEndpoint == null) { // Only do this once
-            IngredientEndpoint.Builder builder = new IngredientEndpoint.Builder(AndroidHttp.newCompatibleTransport(),
+        if (mDatListEndpoint == null) { // Only do this once
+            DatListEndpoint.Builder builder = new DatListEndpoint.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
                     // options for running against local devappserver
                     // - 10.0.2.2 is localhost's IP address in Android emulator
@@ -39,7 +39,7 @@ public class EndpointAsyncTask {
                         }
                     });
             // end options for devappserver
-            ingredientEndpoint = builder.build();
+            mDatListEndpoint = builder.build();
             }
         }
 
@@ -54,7 +54,7 @@ public class EndpointAsyncTask {
             @Override
             protected List<Ingredient> doInBackground(Void... params) {
                 try {
-                    return ingredientEndpoint.listIngredients().execute().getItems();
+                    return mDatListEndpoint.listIngredients().execute().getItems();
                 } catch (IOException e) {
                     return Collections.EMPTY_LIST;
                 }
@@ -64,11 +64,8 @@ public class EndpointAsyncTask {
             protected void onPostExecute(List<Ingredient> ingredients) {
                 super.onPostExecute(ingredients);
 
-                IngredientsAdapter ingredientsAdapter = new IngredientsAdapter(ingredients);
+                    IngredientsAdapter ingredientsAdapter = new IngredientsAdapter(ingredients);
                 recyclerView.setAdapter(ingredientsAdapter);
-
-
-
             }
         }.execute();
     }
@@ -77,9 +74,8 @@ public class EndpointAsyncTask {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
-
                 try {
-                    ingredientEndpoint.insertIngredient(ingredient).execute();
+                    mDatListEndpoint.insertIngredient(ingredient).execute();
                     return true;
                 } catch (IOException e) {
                     e.printStackTrace();

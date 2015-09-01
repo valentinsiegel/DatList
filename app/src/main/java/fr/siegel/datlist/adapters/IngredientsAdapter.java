@@ -10,7 +10,7 @@ import java.util.List;
 
 import fr.siegel.datlist.MainActivity;
 import fr.siegel.datlist.R;
-import fr.siegel.datlist.backend.ingredientEndpoint.model.Ingredient;
+import fr.siegel.datlist.backend.datListEndpoint.model.Ingredient;
 
 public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.ViewHolder>  {
 

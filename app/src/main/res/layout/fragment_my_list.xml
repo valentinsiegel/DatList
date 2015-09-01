@@ -1,7 +1,8 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="fr.siegel.datlist.MyListFragment">
 
@@ -23,23 +24,34 @@
             android:inputType="text" />
 
         <Button
-            android:id="@+id/button_add_items"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/add_item" />
-
-        <Button
             android:id="@+id/button_get_items"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/get_items" />
 
+
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="200dp"
             android:layout_marginTop="8dp"
             android:scrollbars="vertical" />
+
+
     </LinearLayout>
 
-</LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/button_add_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        app:backgroundTint="#FF5252"
+        android:layout_marginEnd="@dimen/fab_margin_right"
+        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        android:src="@mipmap/ic_action" />
+
+
+
+</RelativeLayout>

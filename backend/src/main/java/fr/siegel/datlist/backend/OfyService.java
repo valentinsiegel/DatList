@@ -4,6 +4,8 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 
+import fr.siegel.datlist.backend.model.Ingredient;
+
 /**
  * Created by Val on 23/08/15.
  */
