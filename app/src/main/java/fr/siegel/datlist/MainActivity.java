@@ -2,83 +2,86 @@ package fr.siegel.datlist;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.EditText;
+import android.widget.TextView;
 
+import java.io.IOException;
+
+import fr.siegel.datlist.Utils.SharedPreference;
+import fr.siegel.datlist.backend.datListApi.DatListApi;
+import fr.siegel.datlist.backend.datListApi.model.User;
 import fr.siegel.datlist.services.EndpointAsyncTask;
 
 public class MainActivity extends AppCompatActivity implements MyListFragment.OnFragmentInteractionListener {
 
-    private RecyclerView recyclerView;
-    private EndpointAsyncTask endpointAsyncTask;
-    private EditText editText;
+    private static final int LOGIN_OK = 0;
     private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
+    private Application mApplication;
+    private User mCurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbar object
+        mApplication = new Application();
+        mCurrentUser = mApplication.getUser();
+
+        if (mCurrentUser == null) {
+            long userId = SharedPreference.getUserId(this);
+            if (userId == 0) {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivityForResult(intent, LOGIN_OK);
+            } else {
+                retrieveProfile(userId);
+            }
+
+        }
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-      /*  initView();
-        initEvents();*/
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,toolbar,R.string.openDrawer,R.string.closeDrawer){
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer) {
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                // code here will execute once the drawer is opened( As I dont want anything happened whe drawer is
-                // open I am not going to put anything here)
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                // Code here will execute once drawer is closed
             }
-
-
-
-        }; // Drawer Toggle Object Made
-        mDrawerLayout.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
-        mDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
+        };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
 
         ((NavigationView) findViewById(R.id.navigation_view)).setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-
                 mDrawerLayout.closeDrawers();
-
-                switch (menuItem.getItemId()){
+                switch (menuItem.getItemId()) {
                     case R.id.drawer_layout_list:
                         return true;
                     case R.id.drawer_layout_recipes:
                         return true;
                     case R.id.drawer_layout_items:
-                        // Create a new fragment and specify the planet to show based on position
                         Fragment fragment = new MyListFragment();
                         Bundle args = new Bundle();
                         fragment.setArguments(args);
-                        // Insert the fragment by replacing any existing fragment
                         FragmentManager fragmentManager = getFragmentManager();
                         fragmentManager.beginTransaction()
                                 .replace(R.id.frame_content, fragment)
@@ -87,25 +90,53 @@ public class MainActivity extends AppCompatActivity implements MyListFragment.On
                     case R.id.drawer_layout_settings:
                         return true;
                     default:
-                }       return true;
+                        return true;
+                }
             }
         });
-
-
-
-
     }
 
-    public void initView() {
+    private void retrieveProfile(final long userId) {
 
+
+        new AsyncTask<Void, Void, User>() {
+            DatListApi datListApi = null;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                datListApi = EndpointAsyncTask.getApi();
+            }
+
+            @Override
+            protected User doInBackground(Void... params) {
+                try {
+                    return datListApi.retrieveUserById(userId).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(User user) {
+                super.onPostExecute(user);
+                mCurrentUser = user;
+                ((TextView) findViewById(R.id.drawer_layout_username)).setText(mCurrentUser.getUsername());
+                ((TextView) findViewById(R.id.drawer_layout_email)).setText(mCurrentUser.getUsername());
+            }
+        }.execute();
     }
 
-    public void initEvents() {
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == LOGIN_OK && resultCode == 0) {
+            mCurrentUser = mApplication.getUser();
+            ((TextView) findViewById(R.id.drawer_layout_username)).setText(mCurrentUser.getUsername());
+            ((TextView) findViewById(R.id.drawer_layout_email)).setText(mCurrentUser.getUsername());
+        }
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -119,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements MyListFragment.On
             case R.id.action_settings:
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

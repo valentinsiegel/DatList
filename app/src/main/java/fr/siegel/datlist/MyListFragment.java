@@ -1,9 +1,9 @@
 package fr.siegel.datlist;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import fr.siegel.datlist.backend.datListEndpoint.model.Ingredient;
+import fr.siegel.datlist.backend.datListApi.model.Ingredient;
 import fr.siegel.datlist.services.EndpointAsyncTask;
 
 
@@ -37,6 +37,23 @@ public class MyListFragment extends Fragment{
     private RecyclerView mRecyclerView;
     private EditText mEditText;
     private EndpointAsyncTask mEndpointAsyncTask;
+    public View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.button_get_items:
+                    mEndpointAsyncTask.listIngredients(mRecyclerView, getActivity());
+                    break;
+                case R.id.button_add_items:
+                    mEndpointAsyncTask.insertIngredient(new Ingredient().setName(String.valueOf(mEditText.getText())));
+                    break;
+            }
+        }
+    };
+
+    public MyListFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -47,9 +64,6 @@ public class MyListFragment extends Fragment{
      * @return A new instance of fragment MyListFragment.
      */
     // TODO: Rename and change types and number of parameters
-
-
-
     public static MyListFragment newInstance(String param1, String param2) {
         MyListFragment fragment = new MyListFragment();
         Bundle args = new Bundle();
@@ -57,10 +71,6 @@ public class MyListFragment extends Fragment{
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public MyListFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -74,9 +84,6 @@ public class MyListFragment extends Fragment{
 
         mEndpointAsyncTask = new EndpointAsyncTask();
     }
-
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,21 +100,6 @@ public class MyListFragment extends Fragment{
 
         return view;
     }
-
-
-    public View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.button_get_items:
-                    mEndpointAsyncTask.listIngredients(mRecyclerView, getActivity());
-                    break;
-                case R.id.button_add_items:
-                    mEndpointAsyncTask.insertIngredient(new Ingredient().setName(String.valueOf(mEditText.getText())));
-                    break;
-            }
-        }
-    };
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

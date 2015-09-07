@@ -9,31 +9,31 @@
         android:id="@+id/circleView"
         android:layout_width="76dp"
         android:layout_height="76dp"
-        android:layout_marginStart="24dp"
-        android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="24dp"
         android:src="@mipmap/ic_avatar" />
 
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/drawer_layout_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/circleView"
             android:layout_alignStart="@+id/circleView"
+            android:layout_below="@+id/circleView"
             android:paddingBottom="4dp"
             android:text="Valentin Siegel"
+            android:textAppearance="@style/Subhead"
             android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textAppearance="@style/Subhead"/>
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/email"
+            android:id="@+id/drawer_layout_email"
+            style="@style/Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/name"
             android:layout_alignStart="@+id/circleView"
+            android:layout_below="@+id/name"
             android:layout_marginBottom="8dp"
             android:text="valentinsgl@gmail.com"
-            android:textColor="@color/white"
-            style="@style/Subhead"/>
+            android:textColor="@color/white" />
 </RelativeLayout>

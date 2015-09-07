@@ -14,19 +14,19 @@ import java.util.Collections;
 import java.util.List;
 
 import fr.siegel.datlist.adapters.IngredientsAdapter;
-import fr.siegel.datlist.backend.datListEndpoint.DatListEndpoint;
-import fr.siegel.datlist.backend.datListEndpoint.model.Ingredient;
+import fr.siegel.datlist.backend.datListApi.DatListApi;
+import fr.siegel.datlist.backend.datListApi.model.Ingredient;
 
 /**
  * Created by Val on 23/08/15.
  */
 public class EndpointAsyncTask {
 
-    private static DatListEndpoint mDatListEndpoint = null;
+    private static DatListApi mDatListEndpoint = null;
 
-    public EndpointAsyncTask() {
+    public static DatListApi getApi() {
         if (mDatListEndpoint == null) { // Only do this once
-            DatListEndpoint.Builder builder = new DatListEndpoint.Builder(AndroidHttp.newCompatibleTransport(),
+            DatListApi.Builder builder = new DatListApi.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
                     // options for running against local devappserver
                     // - 10.0.2.2 is localhost's IP address in Android emulator
@@ -41,6 +41,8 @@ public class EndpointAsyncTask {
             // end options for devappserver
             mDatListEndpoint = builder.build();
             }
+
+        return mDatListEndpoint;
         }
 
     public void listIngredients(final RecyclerView recyclerView, final Context context) {
@@ -59,6 +61,7 @@ public class EndpointAsyncTask {
                     return Collections.EMPTY_LIST;
                 }
             }
+
 
             @Override
             protected void onPostExecute(List<Ingredient> ingredients) {
