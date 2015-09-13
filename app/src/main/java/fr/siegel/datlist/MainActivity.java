@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements MyListFragment.On
         if (mCurrentUser == null) {
             long userId = SharedPreference.getUserId(this);
             if (userId == 0) {
-                Intent intent = new Intent(this, LoginActivity.class);
+                Intent intent = new Intent(this, SetupSyncActivity.class);
                 startActivityForResult(intent, LOGIN_OK);
             } else {
                 retrieveProfile(userId);
@@ -49,12 +49,11 @@ public class MainActivity extends AppCompatActivity implements MyListFragment.On
 
         }
 
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer) {
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open_drawer, R.string.drawer_close_drawer) {
 
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -88,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements MyListFragment.On
                                 .commit();
                         return true;
                     case R.id.drawer_layout_settings:
+                        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                        startActivity(intent);
+
                         return true;
                     default:
                         return true;
@@ -134,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements MyListFragment.On
         if (requestCode == LOGIN_OK && resultCode == 0) {
             mCurrentUser = mApplication.getUser();
             ((TextView) findViewById(R.id.drawer_layout_username)).setText(mCurrentUser.getUsername());
-            ((TextView) findViewById(R.id.drawer_layout_email)).setText(mCurrentUser.getUsername());
         }
     }
 

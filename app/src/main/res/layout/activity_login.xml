@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="username"
+            android:text="@string/login_username"
             android:textColor="@color/blue" />
 
         <EditText
@@ -36,13 +36,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="password"
+            android:text="@string/login_password"
             android:textColor="@color/blue" />
 
         <EditText
             android:id="@+id/password_edit_field"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+
+        <TextView
+            android:id="@+id/password_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/login_password_error"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/login_button"

@@ -1,20 +1,39 @@
 <resources>
     <string name="app_name">DatList</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="add_item">Add Items</string>
     <string name="get_items">Get items</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="openDrawer">Drawer opened</string>
-    <string name="closeDrawer">Drawer closed</string>
+    <!-- Activity Titles Strings -->
+    <string name="activity_title_sign_in">Sign In</string>
+    <string name="activity_title_create_account">Create Account</string>
+
+    <!-- Drawer Strings -->
+    <string name="drawer_layout_guest">Guest</string>
+    <string name="drawer_open_drawer">Drawer opened</string>
+    <string name="drawer_close_drawer">Drawer closed</string>
     <string name="drawer_layout_list">List</string>
     <string name="drawer_layout_recipes">Recipes</string>
     <string name="drawer_layout_stock">Items</string>
     <string name="drawer_layout_items">Items</string>
     <string name="drawer_layout_settings">Settings</string>
+
+    <!-- Login String -->
     <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_setup_sync">SetupSyncActivity</string>
+    <string name="button_sign_in">Sign In</string>
+    <string name="button_create_account">Create Account</string>
+
+    <!-- Settings String -->
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="settings_sign_out">Sign out</string>
+
+    <!-- Dialog String -->
+    <string name="dialog_title_sign_out">Sign Out</string>
+    <string name="dialog_message_sign_out">The application will restart without remembering you account information</string>
+    <string name="dialog_positive_sign_out">Sign Out</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_password_error">Incorrect Password</string>
 </resources>
