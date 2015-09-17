@@ -23,7 +23,7 @@ import fr.siegel.datlist.backend.datListApi.DatListApi;
 import fr.siegel.datlist.backend.datListApi.model.User;
 import fr.siegel.datlist.services.EndpointAsyncTask;
 
-public class MainActivity extends AppCompatActivity implements MyListFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements ListFragment.OnFragmentInteractionListener {
 
     private static final int LOGIN_OK = 0;
     private DrawerLayout mDrawerLayout;
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements MyListFragment.On
                     case R.id.drawer_layout_recipes:
                         return true;
                     case R.id.drawer_layout_items:
-                        Fragment fragment = new MyListFragment();
+                        Fragment fragment = new ListFragment();
                         Bundle args = new Bundle();
                         fragment.setArguments(args);
                         FragmentManager fragmentManager = getFragmentManager();

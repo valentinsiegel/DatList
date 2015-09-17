@@ -1,21 +1,13 @@
 package fr.siegel.datlist.services;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.support.v7.widget.RecyclerView;
-
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
-import fr.siegel.datlist.adapters.IngredientsAdapter;
 import fr.siegel.datlist.backend.datListApi.DatListApi;
-import fr.siegel.datlist.backend.datListApi.model.Ingredient;
 
 /**
  * Created by Val on 23/08/15.
@@ -45,7 +37,7 @@ public class EndpointAsyncTask {
         return mDatListEndpoint;
         }
 
-    public void listIngredients(final RecyclerView recyclerView, final Context context) {
+    /*public void listIngredients(final RecyclerView recyclerView, final Context context) {
         new AsyncTask<Void, Void, List<Ingredient>>() {
 
             @Override
@@ -86,5 +78,5 @@ public class EndpointAsyncTask {
                 }
             }
         }.execute();
-    }
+    }*/
 }
