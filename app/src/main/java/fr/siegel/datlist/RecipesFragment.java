@@ -3,10 +3,23 @@ package fr.siegel.datlist;
 import android.app.Activity;
 import android.app.Fragment;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import fr.siegel.datlist.adapters.RecipeAdapter;
+import fr.siegel.datlist.backend.datListApi.DatListApi;
+import fr.siegel.datlist.backend.datListApi.model.Recipe;
+import fr.siegel.datlist.backend.datListApi.model.User;
+import fr.siegel.datlist.services.EndpointAsyncTask;
 
 
 /**
@@ -28,6 +41,13 @@ public class RecipesFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private DatListApi mDatListApi = null;
+    private User mCurrentUser;
+    private ArrayList<Recipe> mRecipeList = new ArrayList<>();
+    private RecyclerView mRecyclerView;
+    private RecipeAdapter mRecipeAdapter;
+    private Application mApplication;
 
     public RecipesFragment() {
         // Required empty public constructor
@@ -58,13 +78,23 @@ public class RecipesFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recipes, container, false);
+        View view = inflater.inflate(R.layout.fragment_recipes, container, false);
+
+        mApplication = new Application();
+        mCurrentUser = mApplication.getUser();
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recipe_list);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        refreshRecipeList();
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -72,6 +102,40 @@ public class RecipesFragment extends Fragment {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+    }
+
+    public void refreshRecipeList() {
+        new AsyncTask<Void, Void, List<Recipe>>() {
+
+            private String username;
+
+            @Override
+            protected void onPreExecute() {
+                mDatListApi = EndpointAsyncTask.getApi();
+                username = mCurrentUser.getUsername();
+            }
+
+            @Override
+            protected List<Recipe> doInBackground(Void... params) {
+                try {
+                    return mDatListApi.retrieveRecipeByUser(username).execute().getItems();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(List<Recipe> recipeList) {
+                super.onPostExecute(recipeList);
+                if (mRecipeList != null) {
+                    mRecipeAdapter = new RecipeAdapter(recipeList);
+                    mRecyclerView.setAdapter(mRecipeAdapter);
+                    mRecipeAdapter.notifyDataSetChanged();
+                }
+
+            }
+        }.execute();
     }
 
     @Override
@@ -105,5 +169,6 @@ public class RecipesFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
 
 }

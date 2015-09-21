@@ -18,12 +18,13 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
+import fr.siegel.datlist.ListFragment.OnFragmentInteractionListener;
 import fr.siegel.datlist.Utils.SharedPreference;
 import fr.siegel.datlist.backend.datListApi.DatListApi;
 import fr.siegel.datlist.backend.datListApi.model.User;
 import fr.siegel.datlist.services.EndpointAsyncTask;
 
-public class MainActivity extends AppCompatActivity implements ListFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener, RecipesFragment.OnFragmentInteractionListener {
 
     private static final int LOGIN_OK = 0;
     private DrawerLayout mDrawerLayout;
@@ -39,8 +40,8 @@ public class MainActivity extends AppCompatActivity implements ListFragment.OnFr
         mCurrentUser = mApplication.getUser();
 
         if (mCurrentUser == null) {
-            long userId = SharedPreference.getUserId(this);
-            if (userId == 0) {
+            String userId = SharedPreference.getUserId(this);
+            if (userId == null) {
                 Intent intent = new Intent(this, SetupSyncActivity.class);
                 startActivityForResult(intent, LOGIN_OK);
             } else {
@@ -72,33 +73,44 @@ public class MainActivity extends AppCompatActivity implements ListFragment.OnFr
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mDrawerLayout.closeDrawers();
-                switch (menuItem.getItemId()) {
-                    case R.id.drawer_layout_list:
-                        return true;
-                    case R.id.drawer_layout_recipes:
-                        return true;
-                    case R.id.drawer_layout_items:
-                        Fragment fragment = new ListFragment();
-                        Bundle args = new Bundle();
-                        fragment.setArguments(args);
-                        FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.frame_content, fragment)
-                                .commit();
-                        return true;
-                    case R.id.drawer_layout_settings:
-                        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                        startActivity(intent);
+                int itemId = menuItem.getItemId();
+                if (itemId == R.id.drawer_layout_settings) {
+                    Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else {
 
-                        return true;
-                    default:
-                        return true;
+                    FragmentManager fragmentManager = getFragmentManager();
+                    Bundle args = new Bundle();
+
+                    switch (itemId) {
+
+                        case R.id.drawer_layout_list:
+                            return true;
+                        case R.id.drawer_layout_recipes:
+                            Fragment recipesFragment = new RecipesFragment();
+                            recipesFragment.setArguments(args);
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.frame_content, recipesFragment)
+                                    .commit();
+                            return true;
+                        case R.id.drawer_layout_items:
+                            Fragment listFragment = new ListFragment();
+                            listFragment.setArguments(args);
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.frame_content, listFragment)
+                                    .commit();
+                            return true;
+                        default:
+                            return true;
+                    }
+
                 }
             }
         });
     }
 
-    private void retrieveProfile(final long userId) {
+    private void retrieveProfile(final String userId) {
 
 
         new AsyncTask<Void, Void, User>() {
@@ -123,7 +135,9 @@ public class MainActivity extends AppCompatActivity implements ListFragment.OnFr
             @Override
             protected void onPostExecute(User user) {
                 super.onPostExecute(user);
-                mCurrentUser = user;
+
+                mApplication.setUser(user);
+                mCurrentUser = mApplication.getUser();
                 ((TextView) findViewById(R.id.drawer_layout_username)).setText(mCurrentUser.getUsername());
                 ((TextView) findViewById(R.id.drawer_layout_email)).setText(mCurrentUser.getUsername());
             }
@@ -156,6 +170,6 @@ public class MainActivity extends AppCompatActivity implements ListFragment.OnFr
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
+        //you can leave it empty
     }
 }

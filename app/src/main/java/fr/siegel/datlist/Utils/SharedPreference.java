@@ -15,15 +15,15 @@ public class SharedPreference
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
-    public static void setUserId(Context ctx, long userId)
+    public static void setUserId(Context ctx, String userId)
     {
         SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
-        editor.putLong(PREF_USER_ID, userId);
+        editor.putString(PREF_USER_ID, userId);
         editor.commit();
     }
 
-    public static long getUserId(Context ctx)
+    public static String getUserId(Context ctx)
     {
-        return getSharedPreferences(ctx).getLong(PREF_USER_ID, 0);
+        return getSharedPreferences(ctx).getString(PREF_USER_ID, null);
     }
 }

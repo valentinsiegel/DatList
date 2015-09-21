@@ -16,6 +16,9 @@ public class Ingredient {
     @Index
     private String name;
 
+    public Ingredient() {
+    }
+
     public Long getId() {
         return id;
     }

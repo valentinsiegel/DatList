@@ -1,6 +1,8 @@
 package fr.siegel.datlist.api.model;
 
 
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -16,6 +18,7 @@ public class Recipe {
     @Id
     String name;
 
+    @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
     @Parent
     Key<User> userKey;
 
@@ -23,12 +26,6 @@ public class Recipe {
     String description;
 
     public Recipe() {
-    }
-
-    public Recipe(String name, Key<User> userKey, String description) {
-        this.name = name;
-        this.userKey = userKey;
-        this.description = description;
     }
 
     public String getName() {
@@ -39,7 +36,7 @@ public class Recipe {
         return description;
     }
 
-    public Key<User> getUserKey() {
-        return userKey;
+    public void setUserKey(String userKey) {
+        this.userKey = Key.create(User.class, userKey);
     }
 }

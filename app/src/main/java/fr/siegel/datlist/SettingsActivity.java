@@ -28,7 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
                     builder.setPositiveButton(getString(R.string.dialog_positive_sign_out), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            SharedPreference.setUserId(SettingsActivity.this, 0);
+                            SharedPreference.setUserId(SettingsActivity.this, null);
                             mAppInstance.setUser(null);
                             Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="178dp"
-        android:background="@mipmap/hero_image_blue"
+        android:background="@drawable/hero_image_blue"
         android:orientation="vertical"
         android:weightSum="1">
 
@@ -34,14 +34,14 @@
 
             <TextView
                 android:id="@+id/email"
+                style="@style/Subhead"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="5dp"
                 android:text="valentinsgl@gmail.com"
                 android:textColor="@color/white"
-                android:textSize="14sp"
-                style="@style/Subhead"/>
+                android:textSize="14sp" />
         </LinearLayout>
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -50,7 +50,7 @@
             android:layout_height="70dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="38dp"
-            android:src="@mipmap/ic_avatar" />
+            android:src="@drawable/ic_avatar" />
     </RelativeLayout>
 
     <LinearLayout
@@ -67,7 +67,7 @@
 
             android:layout_marginLeft="16dp"
             android:layout_marginRight="24dp"
-            android:background="@mipmap/ic_list_black_36dp" />
+            android:background="@drawable/ic_list_black_36dp" />
 
         <TextView
             android:id="@+id/changePinTextView"
@@ -91,7 +91,7 @@
             android:layout_gravity="center_vertical|left"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="24dp"
-            android:background="@mipmap/ic_list_black_36dp" />
+            android:background="@drawable/ic_list_black_36dp" />
 
         <TextView
             style="@style/Subhead"

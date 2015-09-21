@@ -8,13 +8,22 @@ package fr.siegel.datlist.api.endpoints;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.ConflictException;
 import com.google.api.server.spi.response.NotFoundException;
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.cmd.Query;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import fr.siegel.datlist.api.model.Ingredient;
 import fr.siegel.datlist.api.model.Recipe;
 import fr.siegel.datlist.api.model.User;
 
@@ -39,10 +48,11 @@ public class Endpoint {
      */
 
     //CREATES A RECIPE
-    @ApiMethod(name = "createRecipe")
-    public void createRecipe(Recipe recipe) throws ConflictException {
+    @ApiMethod(name = "createRecipe", httpMethod = HttpMethod.POST)
+    public void createRecipe(Recipe recipe, @Named("userKey") String userKey) throws ConflictException {
         if (recipe.getName() != null) {
-            if (findRecipe(recipe.getName()) != null) {
+            recipe.setUserKey(userKey);
+            if (findRecipe(recipe) != null) {
                 throw new ConflictException("Recipe Already Exist");
             }
             ofy().save().entity(recipe).now();
@@ -50,9 +60,10 @@ public class Endpoint {
     }
 
     //UPDATE RECIPE
-    @ApiMethod(name = "updateRecipe")
-    public Recipe updateRecipe(Recipe recipe) throws NotFoundException {
-        if (findRecipe(recipe.getName()) != null) {
+    @ApiMethod(name = "updateRecipe", httpMethod = HttpMethod.PUT)
+    public Recipe updateRecipe(Recipe recipe, @Named("userKey") String userKey) throws NotFoundException {
+        recipe.setUserKey(userKey);
+        if (findRecipe(recipe) != null) {
             ofy().save().entity(recipe).now();
             return recipe;
         }
@@ -60,31 +71,58 @@ public class Endpoint {
     }
 
     //DELETE RECIPE
-    @ApiMethod(name = "deleteRecipe")
-    public void deleteRecipe(@Named("recipeId") String name) throws NotFoundException {
-        if (findRecipe(name) != null) {
-            ofy().delete().type(Recipe.class).id(name).now();
+    @ApiMethod(name = "deleteRecipe", httpMethod = HttpMethod.DELETE)
+    public void deleteRecipe(Recipe recipe, @Named("userKey") String userKey) throws NotFoundException {
+        if (findRecipe(recipe) != null) {
+
+            ofy().delete().type(Recipe.class).id(null).now();
         }
         throw new NotFoundException("Recipe not found");
     }
 
     //RETRIEVE RECIPES BY USER
-    @ApiMethod(name = "retrieveRecipeByUser")
-    public Recipe retrieveRecipeByUser(@Named("useKey") String useKey, @Nullable @Named("count") Integer count) {
-        return ofy().load().type(Recipe.class).ancestor(useKey).first().now();
+    @ApiMethod(name = "retrieveRecipeByUser", httpMethod = HttpMethod.GET)
+    public CollectionResponse<Recipe> retrieveRecipeByUser(@Named("username") String username, @Nullable @Named("cursor") String cursorString,
+                                                           @Nullable @Named("count") Integer count) {
+        Key<User> userKey = Key.create(User.class, username);
+        Query<Recipe> query = ofy().load().type(Recipe.class).ancestor(userKey);
+        if (count != null) query.limit(count);
+        if (cursorString != null && cursorString != "") {
+            query = query.startAt(Cursor.fromWebSafeString(cursorString));
+        }
+
+        List<Recipe> ingredients = new ArrayList<Recipe>();
+        QueryResultIterator<Recipe> iterator = query.iterator();
+        int num = 0;
+        while (iterator.hasNext()) {
+            ingredients.add(iterator.next());
+            if (count != null) {
+                num++;
+                if (num == count) break;
+            }
+        }
+
+        if (cursorString != null && cursorString != "") {
+            Cursor cursor = iterator.getCursor();
+            if (cursor != null) {
+                cursorString = cursor.toWebSafeString();
+            }
+        }
+        return CollectionResponse.<Recipe>builder().setItems(ingredients).setNextPageToken(cursorString).build();
     }
+
 
     //CHECK IF RECIPE ALREADY EXIST
-    private Recipe findRecipe(String name) {
-        return ofy().load().type(Recipe.class).id(name).now();
+    private Recipe findRecipe(Recipe recipe) {
+        Key<Recipe> recipeKey = Key.create(recipe);
+        return ofy().load().type(Recipe.class).filterKey("=", recipeKey).first().now();
     }
 
-/*
     //INSERT INGREDIENT INTO BUY LIST
     @ApiMethod(name = "insertIngredientToBuy")
     public void insertIngredient(Ingredient ingredient) throws ConflictException {
         if (ingredient.getId() != null) {
-            if (/lifindIngredient(ingredient.getId()) != null) {
+            if (findIngredient(ingredient.getId()) != null) {
                 throw new ConflictException("Object already exists");
             }
         }
@@ -142,14 +180,14 @@ public class Endpoint {
 
     private Ingredient findIngredient(Long id) {
         return ofy().load().type(Ingredient.class).id(id).now();
-    }*/
+    }
 
 
     /*
     USER RELATED METHODS
      */
 
-    @ApiMethod(name = "createUser")
+    @ApiMethod(name = "createUser", httpMethod = HttpMethod.POST)
     public User createUser(User user) throws ConflictException {
         if (findUser(user.getUsername()) == null) {
             ofy().save().entity(user).now();
@@ -158,7 +196,7 @@ public class Endpoint {
         throw new ConflictException("Username not available");
     }
 
-    @ApiMethod(name = "updateUser")
+    @ApiMethod(name = "updateUser", httpMethod = HttpMethod.PUT)
     public User updateUser(User user) throws NotFoundException {
         if (findUser(user.getUsername()) != null) {
             ofy().save().entity(user).now();
@@ -167,7 +205,7 @@ public class Endpoint {
         throw new NotFoundException("User not found");
     }
 
-    @ApiMethod(name = "deleteUser")
+    @ApiMethod(name = "deleteUser", httpMethod = HttpMethod.DELETE)
     public void deleteUser(@Named("userId") String username) throws NotFoundException {
         if (findUser(username) != null) {
             ofy().delete().type(User.class).id(username).now();
@@ -177,7 +215,7 @@ public class Endpoint {
     }
 
     //RETRIEVE USER ID, SERVES AS A LOGIN METHOD
-    @ApiMethod(name = "retrieveUserId")
+    @ApiMethod(name = "retrieveUserId", httpMethod = HttpMethod.GET)
     public User retrieveUserId(@Named("username") String username, @Named("password") String password) throws NotFoundException {
         User user = loginUser(username, password);
         if (user != null) {
@@ -187,7 +225,7 @@ public class Endpoint {
     }
 
     //RETURNS USER DATA FOR A USER ID
-    @ApiMethod(name = "retrieveUserById")
+    @ApiMethod(name = "retrieveUserById", httpMethod = HttpMethod.GET)
     public User retrieveUserById(@Named("userId") String username) throws NotFoundException {
         User user = findUser(username);
         if (user != null) {

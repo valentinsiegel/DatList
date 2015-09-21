@@ -8,10 +8,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import fr.siegel.datlist.backend.datListApi.model.Ingredient;
 import fr.siegel.datlist.services.EndpointAsyncTask;
 
 
@@ -28,28 +28,26 @@ public class ListFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
-    private RecyclerView mRecyclerView;
-    private EditText mEditText;
-    private EndpointAsyncTask mEndpointAsyncTask;
-    public View.OnClickListener onClickListener = new View.OnClickListener() {
+    public OnClickListener onClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.button_get_items:
-                    mEndpointAsyncTask.listIngredients(mRecyclerView, getActivity());
+                    //  mEndpointAsyncTask.listIngredients(mRecyclerView, getActivity());
                     break;
                 case R.id.button_add_items:
-                    mEndpointAsyncTask.insertIngredient(new Ingredient().setName(String.valueOf(mEditText.getText())));
+                    //   mEndpointAsyncTask.insertIngredient(new Ingredient().setName(String.valueOf(mEditText.getText())));
                     break;
             }
         }
     };
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+    private OnFragmentInteractionListener mListener;
+    private RecyclerView mRecyclerView;
+    private EditText mEditText;
+    private EndpointAsyncTask mEndpointAsyncTask;
 
     public ListFragment() {
         // Required empty public constructor

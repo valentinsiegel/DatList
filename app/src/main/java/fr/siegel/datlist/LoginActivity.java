@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                 else {
                     Application application = new Application();
                     application.setUser(user);
-                    SharedPreference.setUserId(getBaseContext(), user.getId());
+                    SharedPreference.setUserId(getBaseContext(), user.getUsername());
                     setResult(0);
                     finish();
                 }

@@ -59,7 +59,7 @@ public class EndpointAsyncTask {
             protected void onPostExecute(List<Ingredient> ingredients) {
                 super.onPostExecute(ingredients);
 
-                    IngredientsAdapter ingredientsAdapter = new IngredientsAdapter(ingredients);
+                    IngredientAdapter ingredientsAdapter = new IngredientAdapter(ingredients);
                 recyclerView.setAdapter(ingredientsAdapter);
             }
         }.execute();
