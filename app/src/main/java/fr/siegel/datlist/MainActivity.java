@@ -2,6 +2,7 @@ package fr.siegel.datlist;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private DrawerLayout mDrawerLayout;
     private Application mApplication;
     private User mCurrentUser;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
         mApplication = new Application();
         mCurrentUser = mApplication.getUser();
+        mContext = this;
 
         if (mCurrentUser == null) {
             String userId = SharedPreference.getUserId(this);
@@ -75,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 mDrawerLayout.closeDrawers();
                 int itemId = menuItem.getItemId();
                 if (itemId == R.id.drawer_layout_settings) {
-                    Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                    Intent intent = new Intent(mContext, SettingsActivity.class);
                     startActivity(intent);
                     return true;
                 } else {
@@ -112,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     private void retrieveProfile(final String userId) {
 
-
         new AsyncTask<Void, Void, User>() {
             DatListApi datListApi = null;
 
@@ -135,13 +137,25 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             @Override
             protected void onPostExecute(User user) {
                 super.onPostExecute(user);
+                if (user != null) {
+                    mApplication.setUser(user);
+                    mCurrentUser = mApplication.getUser();
+                    ((TextView) findViewById(R.id.drawer_layout_username)).setText(mCurrentUser.getUsername());
+                    ((TextView) findViewById(R.id.drawer_layout_email)).setText(mCurrentUser.getUsername());
+                } else {
+                    SharedPreference.setUserId(mContext, null);
+                    mApplication.setUser(null);
+                    Intent intent = new Intent(mContext, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
 
-                mApplication.setUser(user);
-                mCurrentUser = mApplication.getUser();
-                ((TextView) findViewById(R.id.drawer_layout_username)).setText(mCurrentUser.getUsername());
-                ((TextView) findViewById(R.id.drawer_layout_email)).setText(mCurrentUser.getUsername());
             }
-        }.execute();
+        }
+
+                .
+
+                        execute();
     }
 
     @Override

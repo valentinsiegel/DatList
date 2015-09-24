@@ -2,6 +2,7 @@ package fr.siegel.datlist;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import java.io.IOException;
@@ -48,6 +50,13 @@ public class RecipesFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private RecipeAdapter mRecipeAdapter;
     private Application mApplication;
+    private OnClickListener onClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getActivity(), AddRecipeActivity.class);
+            startActivity(intent);
+        }
+    };
 
     public RecipesFragment() {
         // Required empty public constructor
@@ -92,6 +101,8 @@ public class RecipesFragment extends Fragment {
         mCurrentUser = mApplication.getUser();
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recipe_list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        view.findViewById(R.id.button_add_items).setOnClickListener(onClickListener);
 
         refreshRecipeList();
         return view;
