@@ -1,20 +1,22 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="70dp"
     android:layout_gravity="center"
-    card_view:cardCornerRadius="4dp">
+    android:layout_margin="@dimen/cardview_default_margin">
 
     <LinearLayout
+        android:id="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/cardview_default_interior_margin"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/recipe_name"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:textAppearance="@style/Subhead" />
 
         <TextView
             android:id="@+id/recipe_description"

@@ -9,6 +9,8 @@ import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Parent;
 
+import java.util.List;
+
 /**
  * Created by Val on 14/09/15.
  */
@@ -25,6 +27,9 @@ public class Recipe {
     @Index
     String description;
 
+    @Index
+    List<Ingredient> ingredientList;
+
     public Recipe() {
     }
 
@@ -36,7 +41,11 @@ public class Recipe {
         return description;
     }
 
-    public void setUserKey(String userKey) {
-        this.userKey = Key.create(User.class, userKey);
+    public void setUserKey(String username) {
+        this.userKey = Key.create(User.class, username);
+    }
+
+    public List<Ingredient> getIngredientList() {
+        return ingredientList;
     }
 }

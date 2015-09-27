@@ -25,7 +25,7 @@ import fr.siegel.datlist.backend.datListApi.DatListApi;
 import fr.siegel.datlist.backend.datListApi.model.User;
 import fr.siegel.datlist.services.EndpointAsyncTask;
 
-public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener, RecipesFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener, RecipesFragment.OnFragmentInteractionListener, ItemsFragment.OnFragmentInteractionListener {
 
     private static final int LOGIN_OK = 0;
     private DrawerLayout mDrawerLayout;
@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             } else {
                 retrieveProfile(userId);
             }
-
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -58,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open_drawer, R.string.drawer_close_drawer) {
-
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -82,13 +80,16 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                     startActivity(intent);
                     return true;
                 } else {
-
                     FragmentManager fragmentManager = getFragmentManager();
                     Bundle args = new Bundle();
-
                     switch (itemId) {
 
                         case R.id.drawer_layout_list:
+                            Fragment listFragment = new ListFragment();
+                            listFragment.setArguments(args);
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.frame_content, listFragment)
+                                    .commit();
                             return true;
                         case R.id.drawer_layout_recipes:
                             Fragment recipesFragment = new RecipesFragment();
@@ -98,10 +99,10 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                                     .commit();
                             return true;
                         case R.id.drawer_layout_items:
-                            Fragment listFragment = new ListFragment();
-                            listFragment.setArguments(args);
+                            Fragment itemsFragment = new ItemsFragment();
+                            itemsFragment.setArguments(args);
                             fragmentManager.beginTransaction()
-                                    .replace(R.id.frame_content, listFragment)
+                                    .replace(R.id.frame_content, itemsFragment)
                                     .commit();
                             return true;
                         default:
@@ -138,8 +139,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             protected void onPostExecute(User user) {
                 super.onPostExecute(user);
                 if (user != null) {
-                    mApplication.setUser(user);
-                    mCurrentUser = mApplication.getUser();
+                    Application.getApplication().setUser(user);
+                    mCurrentUser = Application.getApplication().getUser();
                     ((TextView) findViewById(R.id.drawer_layout_username)).setText(mCurrentUser.getUsername());
                     ((TextView) findViewById(R.id.drawer_layout_email)).setText(mCurrentUser.getUsername());
                 } else {
@@ -151,18 +152,14 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 }
 
             }
-        }
-
-                .
-
-                        execute();
+        }.execute();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LOGIN_OK && resultCode == 0) {
-            mCurrentUser = mApplication.getUser();
+            mCurrentUser = Application.getApplication().getUser();
             ((TextView) findViewById(R.id.drawer_layout_username)).setText(mCurrentUser.getUsername());
         }
     }
@@ -184,6 +181,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-        //you can leave it empty
+
     }
 }

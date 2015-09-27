@@ -35,8 +35,8 @@ public class LoginActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         createAccount = getIntent().getBooleanExtra("CreateAccount", false);
 
@@ -85,7 +85,6 @@ public class LoginActivity extends AppCompatActivity {
                         return null;
                     }
                 }
-
             }
 
             @Override
@@ -95,8 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (user == null)
                     findViewById(R.id.password_error).setVisibility(View.VISIBLE);
                 else {
-                    Application application = new Application();
-                    application.setUser(user);
+                    Application.getApplication().setUser(user);
                     SharedPreference.setUserId(getBaseContext(), user.getUsername());
                     setResult(0);
                     finish();
@@ -108,15 +106,11 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case android.R.id.home:
                 setResult(1);

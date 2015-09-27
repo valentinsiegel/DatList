@@ -43,20 +43,34 @@ import static fr.siegel.datlist.api.OfyService.ofy;
 )
 public class Endpoint {
 
-    /*
-    RECIPE METHODS
+    /* RECIPE RELATED METHODS
+     *
      */
 
-    //CREATES A RECIPE
+    /**
+     * Insert a new recipe in the database.
+     *
+     * @param recipe   The recipe to insert into the database.
+     * @param username The username from the user who created te recipe
+     * @throws ConflictException
+     */
     @ApiMethod(name = "createRecipe", httpMethod = HttpMethod.POST)
-    public void createRecipe(Recipe recipe, @Named("userKey") String userKey) throws ConflictException {
+    public void createRecipe(Recipe recipe, @Named("userKey") String username) throws ConflictException {
         if (recipe.getName() != null) {
-            recipe.setUserKey(userKey);
+            recipe.setUserKey(username);
             if (findRecipe(recipe) != null) {
                 throw new ConflictException("Recipe Already Exist");
             }
             ofy().save().entity(recipe).now();
         }
+    }
+
+    @ApiMethod(name = "getRecipe", httpMethod = HttpMethod.GET)
+    public Recipe getRecipe(@Named("recipeName") String recipeName, @Named("username") String username) throws NotFoundException {
+        Key<User> userKey = Key.create(User.class, username);
+        Key<Recipe> recipeKey = Key.create(userKey, Recipe.class, recipeName);
+        return ofy().load().type(Recipe.class).filterKey("=", recipeKey).first().now();
+
     }
 
     //UPDATE RECIPE
@@ -118,11 +132,16 @@ public class Endpoint {
         return ofy().load().type(Recipe.class).filterKey("=", recipeKey).first().now();
     }
 
+    /*
+        INGREDIENT RELATED METHODS
+    */
+
     //INSERT INGREDIENT INTO BUY LIST
-    @ApiMethod(name = "insertIngredientToBuy")
-    public void insertIngredient(Ingredient ingredient) throws ConflictException {
-        if (ingredient.getId() != null) {
-            if (findIngredient(ingredient.getId()) != null) {
+    @ApiMethod(name = "insertIngredient")
+    public void insertIngredient(Ingredient ingredient, @Named("username") String username) throws ConflictException {
+        ingredient.setUserKey(username);
+        if (ingredient.getName() != null) {
+            if (findIngredient(ingredient) != null) {
                 throw new ConflictException("Object already exists");
             }
         }
@@ -149,10 +168,10 @@ public class Endpoint {
 
 
     @ApiMethod(name = "listIngredients")
-    public CollectionResponse<Ingredient> listQuote(@Nullable @Named("cursor") String cursorString,
+    public CollectionResponse<Ingredient> listQuote(@Named("username") String username, @Nullable @Named("cursor") String cursorString,
                                                     @Nullable @Named("count") Integer count) {
-
-        Query<Ingredient> query = ofy().load().type(Ingredient.class);
+        Key<User> userKey = Key.create(User.class, username);
+        Query<Ingredient> query = ofy().load().type(Ingredient.class).ancestor(userKey);
         if (count != null) query.limit(count);
         if (cursorString != null && cursorString != "") {
             query = query.startAt(Cursor.fromWebSafeString(cursorString));
@@ -178,8 +197,9 @@ public class Endpoint {
         return CollectionResponse.<Ingredient>builder().setItems(ingredients).setNextPageToken(cursorString).build();
     }
 
-    private Ingredient findIngredient(Long id) {
-        return ofy().load().type(Ingredient.class).id(id).now();
+    private Ingredient findIngredient(Ingredient ingredient) {
+        Key<Ingredient> ingredientKey = Key.create(ingredient);
+        return ofy().load().type(Ingredient.class).filterKey("=", ingredientKey).first().now();
     }
 
 

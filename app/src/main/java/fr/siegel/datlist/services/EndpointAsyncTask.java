@@ -37,7 +37,7 @@ public class EndpointAsyncTask {
         return mDatListEndpoint;
         }
 
-    /*public void listIngredients(final RecyclerView recyclerView, final Context context) {
+  /*  public void listIngredients() {
         new AsyncTask<Void, Void, List<Ingredient>>() {
 
             @Override

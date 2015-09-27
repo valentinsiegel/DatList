@@ -10,9 +10,9 @@ import fr.siegel.datlist.backend.datListApi.model.User;
 public class Application extends android.app.Application {
 
     private static Application mApplication;
-    private static User user;
+    private User user;
 
-    public Application getApplication() {
+    public static Application getApplication() {
         return mApplication;
     }
 

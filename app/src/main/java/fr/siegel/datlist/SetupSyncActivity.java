@@ -10,8 +10,6 @@ import android.view.View.OnClickListener;
 
 public class SetupSyncActivity extends AppCompatActivity {
 
-    private int REQUEST_EXIT = 0;
-    private int LOGIN_OK = 0;
     private OnClickListener onClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -24,6 +22,7 @@ public class SetupSyncActivity extends AppCompatActivity {
                     intent.putExtra("CreateAccount", true);
                     break;
             }
+            int REQUEST_EXIT = 0;
             startActivityForResult(intent, REQUEST_EXIT);
         }
     };
@@ -33,13 +32,13 @@ public class SetupSyncActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_sync);
 
-
         findViewById(R.id.login_button).setOnClickListener(onClickListener);
         findViewById(R.id.create_account_button).setOnClickListener(onClickListener);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int LOGIN_OK = 0;
         if (resultCode == LOGIN_OK) {
             setResult(0);
             finish();
@@ -48,16 +47,12 @@ public class SetupSyncActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_setup_sync, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
