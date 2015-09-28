@@ -69,6 +69,14 @@ public class Endpoint {
         }
     }
 
+    /**
+     * Return a Recipe from a user.
+     *
+     * @param recipeName The name of the recipe
+     * @param username   The username from the user who created te recipe
+     * @return Recipe
+     * @throws NotFoundException
+     */
     @ApiMethod(name = "getRecipe", httpMethod = HttpMethod.GET)
     public Recipe getRecipe(@Named("recipeName") String recipeName, @Named("username") String username) throws NotFoundException {
         Key<User> userKey = Key.create(User.class, username);
@@ -77,10 +85,18 @@ public class Endpoint {
 
     }
 
+    /**
+     * Update the recipe in the database and returns it.
+     *
+     * @param recipe The Recipe to update
+     * @param username The username of user who created te recipe
+     * @return Updated Recipe
+     * @throws NotFoundException
+     */
     //UPDATE RECIPE
     @ApiMethod(name = "updateRecipe", httpMethod = HttpMethod.PUT)
-    public Recipe updateRecipe(Recipe recipe, @Named("userKey") String userKey) throws NotFoundException {
-        recipe.setUserKey(userKey);
+    public Recipe updateRecipe(Recipe recipe, @Named("userKey") String username) throws NotFoundException {
+        recipe.setUserKey(username);
         if (findRecipe(recipe) != null) {
             ofy().save().entity(recipe).now();
             return recipe;
@@ -88,9 +104,15 @@ public class Endpoint {
         throw new NotFoundException("Recipe not found");
     }
 
-    //DELETE RECIPE
+    /**
+     * Delete a recipe from the datatbase
+     *
+     * @param recipe The recipe to delete
+     * @param username The username of user who created te recipe
+     * @throws NotFoundException
+     */
     @ApiMethod(name = "deleteRecipe", httpMethod = HttpMethod.DELETE)
-    public void deleteRecipe(Recipe recipe, @Named("userKey") String userKey) throws NotFoundException {
+    public void deleteRecipe(Recipe recipe, @Named("userKey") String username) throws NotFoundException {
         if (findRecipe(recipe) != null) {
 
             ofy().delete().type(Recipe.class).id(null).now();
@@ -98,7 +120,14 @@ public class Endpoint {
         throw new NotFoundException("Recipe not found");
     }
 
-    //RETRIEVE RECIPES BY USER
+    /**
+     * Retrieves all of the recipes created by a user
+     *
+     * @param username The username of the user who created the recipe
+     * @param cursorString
+     * @param count An optional Integer used to limit the number of recipes returned
+     * @return A CollectionResponse of recipes, usable as a List
+     */
     @ApiMethod(name = "retrieveRecipeByUser", httpMethod = HttpMethod.GET)
     public CollectionResponse<Recipe> retrieveRecipeByUser(@Named("username") String username, @Nullable @Named("cursor") String cursorString,
                                                            @Nullable @Named("count") Integer count) {
@@ -130,7 +159,12 @@ public class Endpoint {
     }
 
 
-    //CHECK IF RECIPE ALREADY EXIST
+    /**
+     * Private method used by the endpoint to check whether or not the user already created a recipe of the same name.
+     *
+     * @param recipe the recipe to check
+     * @return The recipe passed as a parameter if it already exist in the database
+     */
     private Recipe findRecipe(Recipe recipe) {
         Key<Recipe> recipeKey = Key.create(recipe);
         return ofy().load().type(Recipe.class).filterKey("=", recipeKey).first().now();
@@ -140,7 +174,13 @@ public class Endpoint {
         INGREDIENT RELATED METHODS
     */
 
-    //INSERT INGREDIENT INTO BUY LIST
+    /**
+     * Insert an ingredient into the database.
+     *
+     * @param ingredient The ingredient object to add to the database
+     * @param username The username of the user who owns the ingredient
+     * @throws ConflictException In case the ingredient already exist
+     */
     @ApiMethod(name = "insertIngredient")
     public void insertIngredient(Ingredient ingredient, @Named("username") String username) throws ConflictException {
         ingredient.setUserKey(username);
@@ -153,6 +193,13 @@ public class Endpoint {
         ofy().save().entity(ingredient).now();
     }
 
+    /**
+     * Save the name of a recipe into the user's dictionary so that he can type its name faster in an edit text.
+     * Private method of the endpoint
+     *
+     * @param ingredient The ingredient's name to save
+     * @param username The username of the user
+     */
     private void saveIngredientInDictionary(Ingredient ingredient, @Named("username") String username) {
         Key<User> userKey = Key.create(User.class, username);
         User user = ofy().load().type(User.class).filterKey("=", userKey).first().now();
@@ -163,25 +210,30 @@ public class Endpoint {
         ofy().save().entity(user).now();
     }
 
-    @ApiMethod(name = "getIngredientByName")
-    public Ingredient ingredientByName(@Named("name") String name) throws ConflictException {
+    /**
+     * Gets an ingredient with its name
+     *
+     * @param name Name of the ingredient to return
+     * @return Ingredient
+     * @throws NotFoundException In case the ingredient doesn't exist
+     */
+    @ApiMethod(name = "getIngredientByName", httpMethod = HttpMethod.GET)
+    public Ingredient ingredientByName(@Named("name") String name) throws NotFoundException {
         if (name != null) {
             return ofy().load().type(Ingredient.class).filter("name", name).first().now();
         } else {
-            throw new ConflictException("");
+            throw new NotFoundException("Ingredient Not Found");
         }
     }
 
-    @ApiMethod(name = "getIngredientById")
-    public Ingredient ingredientById(@Named("id") Long id) throws ConflictException {
-        if (id != null) {
-            return ofy().load().type(Ingredient.class).id(id).now();
-        } else {
-            throw new ConflictException("");
-        }
-    }
-
-
+    /**
+     * List all of the ingredient from a user
+     *
+     * @param username
+     * @param cursorString
+     * @param count An integer used to limit the number of ingredient returned
+     * @return A CollectionResponse of ingredient which can be used as a List
+     */
     @ApiMethod(name = "listIngredients")
     public CollectionResponse<Ingredient> listQuote(@Named("username") String username, @Nullable @Named("cursor") String cursorString,
                                                     @Nullable @Named("count") Integer count) {
@@ -222,6 +274,13 @@ public class Endpoint {
     USER RELATED METHODS
      */
 
+    /**
+     * Create a new User
+     *
+     * @param user A User object
+     * @return the just created user
+     * @throws ConflictException In case the user already exist
+     */
     @ApiMethod(name = "createUser", httpMethod = HttpMethod.POST)
     public User createUser(User user) throws ConflictException {
         if (findUser(user.getUsername()) == null) {
@@ -231,6 +290,12 @@ public class Endpoint {
         throw new ConflictException("Username not available");
     }
 
+    /**
+     * Update a User
+     * @param user the user to update
+     * @return the updated user
+     * @throws NotFoundException In case the user doesn't exist
+     */
     @ApiMethod(name = "updateUser", httpMethod = HttpMethod.PUT)
     public User updateUser(User user) throws NotFoundException {
         if (findUser(user.getUsername()) != null) {
@@ -240,6 +305,12 @@ public class Endpoint {
         throw new NotFoundException("User not found");
     }
 
+    /**
+     * Delete a user
+     *
+     * @param username the username of the user to delete
+     * @throws NotFoundException In case the user doesn't exist
+     */
     @ApiMethod(name = "deleteUser", httpMethod = HttpMethod.DELETE)
     public void deleteUser(@Named("userId") String username) throws NotFoundException {
         if (findUser(username) != null) {
@@ -249,7 +320,14 @@ public class Endpoint {
         }
     }
 
-    //RETRIEVE USER ID, SERVES AS A LOGIN METHOD
+    /**
+     * Retrieve a User object with a username and a password, serves as a login method
+     *
+     * @param username
+     * @param password
+     * @return the corresponding user
+     * @throws NotFoundException In case there's no match for the username/password
+     */
     @ApiMethod(name = "retrieveUserId", httpMethod = HttpMethod.GET)
     public User retrieveUserId(@Named("username") String username, @Named("password") String password) throws NotFoundException {
         User user = loginUser(username, password);
@@ -259,7 +337,13 @@ public class Endpoint {
         throw new NotFoundException("Incorrect username or password");
     }
 
-    //RETURNS USER DATA FOR A USER ID
+    /**
+     * Retrieve a User object using using its username, serves as a way to retrieve a user from the cloud after the client as been killed
+     *
+     * @param username The username of the user
+     * @return a user Object
+     * @throws NotFoundException In case the user doesn't exist
+     */
     @ApiMethod(name = "retrieveUserById", httpMethod = HttpMethod.GET)
     public User retrieveUserById(@Named("userId") String username) throws NotFoundException {
         User user = findUser(username);
@@ -269,13 +353,23 @@ public class Endpoint {
         throw new NotFoundException("User not found");
     }
 
-    //LOGIN THE USER
+    /**
+     * Private method used by the endpoint to check if a user uses the username/password couple
+     * @param username
+     * @param password
+     * @return A User
+     */
     private User loginUser(String username, String password) {
         Key<User> userKey = Key.create(User.class, username);
         return ofy().load().type(User.class).filterKey("=", userKey).filter("password", password).first().now();
     }
 
-    //CHECK IF USERNAME IS AVAILABLE
+    /**
+     * Private method used by the endpoint to check whether or not he username has already been taken in the database
+     *
+     * @param username
+     * @return Returns a user object in case the username has already been taken
+     */
     private User findUser(String username) {
         return ofy().load().type(User.class).id(username).now();
     }
