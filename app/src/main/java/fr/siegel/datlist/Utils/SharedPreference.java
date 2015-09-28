@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.Set;
+
 /**
  * Created by Val on 01/09/15.
  */
@@ -20,6 +22,10 @@ public class SharedPreference
         SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
         editor.putString(PREF_USER_ID, userId);
         editor.commit();
+    }
+
+    public static void setUserDictionary(Context context, Set<String> dictionary) {
+
     }
 
     public static String getUserId(Context ctx)

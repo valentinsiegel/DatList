@@ -36,11 +36,22 @@
     <string name="dialog_positive_sign_out">Sign Out</string>
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
-    <string name="login_password_error">Incorrect Password</string>
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_add_recipe">AddRecipeActivity</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="recipe_description">Describe your recipe</string>
+    <string name="name_recipe_hint">Name your recipe</string>
+    <string name="name_recipe_error">You must name your recipe.</string>
+    <string name="ingredient_list_error">You must supply at least two ingredients</string>
+    <string name="login_username_error">You must enter a valid username</string>
+    <string name="login_password_error">You must enter a valid password</string>
+    <string name="login_show_password">Show password</string>
+    <string name="login_dialog_username_conflict_title">Couldn\'t create an accoutn</string>
+    <string name="login_dialog_username_conflict_message">Username has already been taken</string>
+    <string name="login_incorrect_password">Incorrect password</string>
+    <string name="activity_title_add_recipe_activity">Create your recipe</string>
+    <string name="add_recipe_dialog_username_conflict_title">Can\'t create a new recipe</string>
+    <string name="add_recipe_dialog_username_conflict_message">You already created a recipe with the same name.</string>
 </resources>

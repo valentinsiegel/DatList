@@ -1,5 +1,6 @@
 package fr.siegel.datlist;
 
+import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +10,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,18 +31,18 @@ import fr.siegel.datlist.services.EndpointAsyncTask;
 
 public class AddRecipeActivity extends AppCompatActivity {
 
-    private TextView mRecipeNameTextView;
-    private TextView mRecipeDescriptionTextView;
-    private EditText mIngredientNameEditText;
+    public final static String RECIPE_ALREADY_EXIST = "Conflict";
     private List<Ingredient> mIngredientList = null;
     private User mCurrentUser;
     private IngredientAdapter ingredientAdapter;
-
-    private View.OnClickListener addIngredientListener = new View.OnClickListener() {
+    private String mRecipeName;
+    private String mRecipeDescription;
+    private EditText mIngredientName;
+    private OnClickListener addIngredientListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (Utils.checkForEmptyString(mIngredientNameEditText.getText().toString())) {
-                ingredientAdapter.addIngredient(new Ingredient().setName(mIngredientNameEditText.getText().toString()));
+            if (Utils.checkForEmptyString(mIngredientName.getText().toString())) {
+                ingredientAdapter.addIngredient(new Ingredient().setName(mIngredientName.getText().toString()));
             }
         }
     };
@@ -50,18 +54,31 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null)
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(R.string.activity_title_add_recipe_activity);
+        }
 
         mCurrentUser = Application.getApplication().getUser();
         mIngredientList = new ArrayList<>();
+
         initView();
     }
 
     private void initView() {
-        mRecipeNameTextView = (TextView) findViewById(R.id.recipe_name);
-        mRecipeDescriptionTextView = (TextView) findViewById(R.id.recipe_description);
-        mIngredientNameEditText = (EditText) findViewById(R.id.ingredient_name);
+        mRecipeName = ((EditText) findViewById(R.id.recipe_name)).getText().toString();
+        mRecipeDescription = ((EditText) findViewById(R.id.recipe_description)).getText().toString();
+
+        AutoCompleteTextView itemNameEditText = (AutoCompleteTextView) findViewById(R.id.ingredient_name_text_view);
+
+        String[] ingredients = new String[mCurrentUser.getDictionary().size()];
+        for (int i = 0; i < mCurrentUser.getDictionary().size(); i++) {
+            ingredients[i] = mCurrentUser.getDictionary().get(i);
+        }
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(AddRecipeActivity.this, android.R.layout.simple_list_item_1, ingredients);
+        itemNameEditText.setAdapter(adapter);
 
         RecyclerView mIngredientListRecyclerView = (RecyclerView) findViewById(R.id.ingredient_list);
         mIngredientListRecyclerView.setLayoutManager(new LinearLayoutManager(AddRecipeActivity.this));
@@ -85,7 +102,8 @@ public class AddRecipeActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.action_add:
-                addRecipe();
+                if (!checkForErrors())
+                    addRecipe();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -94,30 +112,24 @@ public class AddRecipeActivity extends AppCompatActivity {
     private void addRecipe() {
         new AsyncTask<Void, Void, Boolean>() {
 
-            String recipeName;
-            String recipeDescription;
-            DatListApi datListApi;
+            DatListApi datListApi = null;
+            String errorMessage;
 
             @Override
             protected void onPreExecute() {
                 datListApi = EndpointAsyncTask.getApi();
-                recipeName = mRecipeNameTextView.getText().toString();
-                recipeDescription = mRecipeDescriptionTextView.getText().toString();
                 super.onPreExecute();
             }
 
             @Override
             protected Boolean doInBackground(Void... params) {
-                if (recipeName != null && recipeDescription != null && mIngredientList != null) {
-                    try {
-                        datListApi.createRecipe(mCurrentUser.getUsername(), new Recipe().setName(recipeName).setDescription(recipeDescription)).execute();
-                        return true;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return false;
-                    }
-                } else {
-                    showErrors();
+                try {
+                    datListApi.createRecipe(mCurrentUser.getUsername(), new Recipe().setName(mRecipeName).setDescription(mRecipeDescription).setIngredientList(mIngredientList)).execute();
+                    return true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    GoogleJsonResponseException googleJsonResponseException = (GoogleJsonResponseException) e;
+                    errorMessage = googleJsonResponseException.getStatusMessage();
                     return false;
                 }
             }
@@ -126,15 +138,85 @@ public class AddRecipeActivity extends AppCompatActivity {
             protected void onPostExecute(Boolean success) {
                 super.onPostExecute(success);
                 if (success) {
+                    retrieveUserData(mCurrentUser.getUsername());
+                    mCurrentUser = Application.getApplication().getUser();
                     setResult(1);
                     finish();
-                } else
-                    Toast.makeText(AddRecipeActivity.this, "Recipe not added", Toast.LENGTH_SHORT).show();
+                } else {
+                    showAlertDialog(errorMessage);
+                }
             }
         }.execute();
     }
 
-    private void showErrors() {
+    public void retrieveUserData(final String userId) {
 
+        new AsyncTask<Void, Void, Boolean>() {
+            User user;
+            DatListApi datListApi;
+
+            @Override
+            protected void onPreExecute() {
+                datListApi = EndpointAsyncTask.getApi();
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                try {
+                    user = datListApi.retrieveUserById(userId).execute();
+                    return true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return true;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                Application.getApplication().setUser(user);
+                mCurrentUser = user;
+                super.onPostExecute(aBoolean);
+            }
+        }.execute();
+    }
+
+    public void showAlertDialog(String errorMessage) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AddRecipeActivity.this);
+        switch (errorMessage) {
+            case RECIPE_ALREADY_EXIST:
+                builder.setTitle(R.string.add_recipe_dialog_username_conflict_title);
+                builder.setMessage(R.string.add_recipe_dialog_username_conflict_message);
+                break;
+        }
+        builder.setPositiveButton(android.R.string.ok, null);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+    /*
+    LISTENERS
+     */
+
+    private boolean checkForErrors() {
+
+        boolean errors = false;
+
+        initView();
+
+        if (!Utils.checkForEmptyString(mRecipeName)) {
+            findViewById(R.id.recipe_name_error).setVisibility(View.VISIBLE);
+            errors = true;
+        } else {
+            findViewById(R.id.recipe_name_error).setVisibility(View.GONE);
+        }
+
+        if (mIngredientList.size() < 1) {
+            findViewById(R.id.recipe_ingredient_error).setVisibility(View.VISIBLE);
+            errors = true;
+        } else {
+            findViewById(R.id.recipe_ingredient_error).setVisibility(View.GONE);
+        }
+
+        return errors;
     }
 }

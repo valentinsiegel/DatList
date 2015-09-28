@@ -17,6 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+
 import java.io.IOException;
 
 import fr.siegel.datlist.ListFragment.OnFragmentInteractionListener;
@@ -116,8 +118,10 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     private void retrieveProfile(final String userId) {
 
-        new AsyncTask<Void, Void, User>() {
+        new AsyncTask<Void, Void, Boolean>() {
+            String errorMessage;
             DatListApi datListApi = null;
+            User user;
 
             @Override
             protected void onPreExecute() {
@@ -126,19 +130,22 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             }
 
             @Override
-            protected User doInBackground(Void... params) {
+            protected Boolean doInBackground(Void... params) {
                 try {
-                    return datListApi.retrieveUserById(userId).execute();
+                    user = datListApi.retrieveUserById(userId).execute();
+                    return true;
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return null;
+                    GoogleJsonResponseException googleJsonResponseException = (GoogleJsonResponseException) e;
+                    errorMessage = googleJsonResponseException.getStatusMessage();
+                    return false;
                 }
             }
 
             @Override
-            protected void onPostExecute(User user) {
-                super.onPostExecute(user);
-                if (user != null) {
+            protected void onPostExecute(Boolean success) {
+                super.onPostExecute(success);
+                if (success) {
                     Application.getApplication().setUser(user);
                     mCurrentUser = Application.getApplication().getUser();
                     ((TextView) findViewById(R.id.drawer_layout_username)).setText(mCurrentUser.getUsername());

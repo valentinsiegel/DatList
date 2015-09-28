@@ -32,10 +32,12 @@ public class EndpointAsyncTask {
                     });
             // end options for devappserver
             mDatListEndpoint = builder.build();
-            }
+        }
 
         return mDatListEndpoint;
-        }
+    }
+
+
 
   /*  public void listIngredients() {
         new AsyncTask<Void, Void, List<Ingredient>>() {

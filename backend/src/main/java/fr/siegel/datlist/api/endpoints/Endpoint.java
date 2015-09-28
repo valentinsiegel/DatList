@@ -61,6 +61,10 @@ public class Endpoint {
             if (findRecipe(recipe) != null) {
                 throw new ConflictException("Recipe Already Exist");
             }
+            List<Ingredient> strings = recipe.getIngredientList();
+            for (int i = 0; i < recipe.getIngredientList().size(); i++) {
+                saveIngredientInDictionary(recipe.getIngredientList().get(i), username);
+            }
             ofy().save().entity(recipe).now();
         }
     }
@@ -140,12 +144,23 @@ public class Endpoint {
     @ApiMethod(name = "insertIngredient")
     public void insertIngredient(Ingredient ingredient, @Named("username") String username) throws ConflictException {
         ingredient.setUserKey(username);
+        saveIngredientInDictionary(ingredient, username);
         if (ingredient.getName() != null) {
             if (findIngredient(ingredient) != null) {
                 throw new ConflictException("Object already exists");
             }
         }
         ofy().save().entity(ingredient).now();
+    }
+
+    private void saveIngredientInDictionary(Ingredient ingredient, @Named("username") String username) {
+        Key<User> userKey = Key.create(User.class, username);
+        User user = ofy().load().type(User.class).filterKey("=", userKey).first().now();
+        List<String> dictionary = user.getDictionary();
+        if (!dictionary.contains(ingredient.getName())) {
+            user.addToDictionary(ingredient.getName());
+        }
+        ofy().save().entity(user).now();
     }
 
     @ApiMethod(name = "getIngredientByName")

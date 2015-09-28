@@ -9,59 +9,97 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar" />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:padding="@dimen/activity_margin">
 
         <ImageView
             android:id="@+id/recipe_picture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/food" />
+            android:src="@drawable/food"
+            android:visibility="gone" />
 
-        <EditText
-            android:id="@+id/recipe_name"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_toEndOf="@+id/recipe_picture"
-            android:singleLine="true" />
+            android:layout_marginStart="8dp">
 
-        <EditText
-            android:id="@+id/recipe_description"
+            <EditText
+                android:id="@+id/recipe_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/name_recipe_hint"
+                android:singleLine="true" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/recipe_name_error"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/recipe_picture"
-            android:layout_marginTop="16dp"
-            android:maxLines="5"
-            android:minLines="3" />
+            android:layout_marginStart="8dp"
+            android:text="@string/name_recipe_error"
+            android:textColor="@color/red"
+            android:visibility="gone" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/description_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <EditText
+                android:id="@+id/recipe_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:hint="@string/recipe_description"
+                android:maxLines="5"
+                android:minLines="3" />
+
+        </android.support.design.widget.TextInputLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/ingredient_list"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_below="@+id/recipe_description"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="16dp" />
 
-        <EditText
-            android:id="@+id/ingredient_name"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/ingredient_list"
-            android:singleLine="true" />
 
-        <Button
-            android:id="@+id/add_ingredient"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/ingredient_list"
+            android:orientation="horizontal">
+
+            <AutoCompleteTextView
+                android:id="@+id/ingredient_name_text_view"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:completionThreshold="1"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/add_ingredient"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/add" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/recipe_ingredient_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_toEndOf="@+id/ingredient_name"
-            android:text="@string/add" />
+            android:text="@string/ingredient_list_error"
+            android:textColor="@color/red"
+            android:visibility="gone" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

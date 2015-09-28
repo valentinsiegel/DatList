@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
 import java.io.IOException;
@@ -36,6 +38,7 @@ public class ItemsFragment extends Fragment {
         public void onClick(View v) {
             if (Utils.checkForEmptyString(mEditText.getText().toString()))
                 insertItem(new Ingredient().setName(mEditText.getText().toString()));
+            mEditText.setText("");
         }
     };
 
@@ -56,7 +59,19 @@ public class ItemsFragment extends Fragment {
         mCurrentUser = Application.getApplication().getUser();
 
         mItemListRecyclerView = (RecyclerView) view.findViewById(R.id.item_list);
-        mEditText = (EditText) view.findViewById(R.id.ingredient_name_edit_text);
+
+
+        AutoCompleteTextView itemNameEditText = (AutoCompleteTextView) view.findViewById(R.id.ingredient_name_edit_text);
+
+        String[] ingredients = new String[mCurrentUser.getDictionary().size()];
+        for (int i = 0; i < mCurrentUser.getDictionary().size(); i++) {
+            ingredients[i] = mCurrentUser.getDictionary().get(i);
+        }
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, ingredients);
+        itemNameEditText.setAdapter(adapter);
+
         view.findViewById(R.id.button_add_items).setOnClickListener(addIngredient);
 
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -104,8 +119,45 @@ public class ItemsFragment extends Fragment {
 
             @Override
             protected void onPostExecute(Boolean success) {
+                if (success) {
+                    retrieveUserData(mCurrentUser.getUsername());
+                    refreshIngredientList();
+                }
+
                 super.onPostExecute(success);
-                refreshIngredientList();
+
+            }
+        }.execute();
+    }
+
+    public void retrieveUserData(final String userId) {
+
+        new AsyncTask<Void, Void, Boolean>() {
+            User user;
+            DatListApi datListApi;
+
+            @Override
+            protected void onPreExecute() {
+                datListApi = EndpointAsyncTask.getApi();
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                try {
+                    user = datListApi.retrieveUserById(userId).execute();
+                    return true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return true;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                Application.getApplication().setUser(user);
+                mCurrentUser = user;
+                super.onPostExecute(aBoolean);
             }
         }.execute();
     }
