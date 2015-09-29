@@ -19,6 +19,8 @@ import android.widget.TextView;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.siegel.datlist.Utils.SharedPreference;
 import fr.siegel.datlist.Utils.Utils;
@@ -129,8 +131,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             protected Boolean doInBackground(Void... params) {
                 if (createAccount) {
+                    List<String> stringList = new ArrayList<>();
+                    stringList.add("");
                     try {
-                        user = datListApi.createUser(new User().setUsername(mUsername).setPassword(mPassword)).execute();
+                        user = datListApi.createUser(new User().setUsername(mUsername).setPassword(mPassword).setDictionary(stringList)).execute();
                         return true;
                     } catch (IOException e) {
                         e.printStackTrace();

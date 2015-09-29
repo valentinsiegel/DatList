@@ -5,6 +5,7 @@ import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 
 import fr.siegel.datlist.api.model.Ingredient;
+import fr.siegel.datlist.api.model.IngredientToBuy;
 import fr.siegel.datlist.api.model.Recipe;
 import fr.siegel.datlist.api.model.User;
 
@@ -16,6 +17,7 @@ public class OfyService {
         ObjectifyService.register(Ingredient.class);
         ObjectifyService.register(User.class);
         ObjectifyService.register(Recipe.class);
+        ObjectifyService.register(IngredientToBuy.class);
     }
 
     public static Objectify ofy() {

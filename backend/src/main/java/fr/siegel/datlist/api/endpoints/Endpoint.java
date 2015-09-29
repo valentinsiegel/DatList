@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.siegel.datlist.api.model.Ingredient;
+import fr.siegel.datlist.api.model.IngredientToBuy;
 import fr.siegel.datlist.api.model.Recipe;
 import fr.siegel.datlist.api.model.User;
 
@@ -43,6 +44,66 @@ import static fr.siegel.datlist.api.OfyService.ofy;
 )
 public class Endpoint {
 
+    /*
+    INGREDIENT TO BUY RELATED METHODS
+     */
+
+    /**
+     * Add an Item to buy into the database
+     *
+     * @param ingredientToBuy
+     * @param username
+     * @throws ConflictException
+     */
+    @ApiMethod(name = "addIngredientToBuy")
+    public void addIngredientToBuy(@Named("username") String username, IngredientToBuy ingredientToBuy) {
+        ingredientToBuy.setUserKey(username);
+        ofy().save().entity(ingredientToBuy).now();
+    }
+
+    /**
+     * Retrieve the list of ingredient the user has registered
+     *
+     * @param username
+     * @param cursorString
+     * @param count
+     * @return
+     */
+    @ApiMethod(name = "listIngredientToBuy", httpMethod = HttpMethod.GET)
+    public CollectionResponse<IngredientToBuy> listIngredientToBuy(@Named("username") String username, @Nullable @Named("cursor") String cursorString,
+                                                                   @Nullable @Named("count") Integer count) {
+        Key<User> userKey = Key.create(User.class, username);
+        Query<IngredientToBuy> query = ofy().load().type(IngredientToBuy.class).ancestor(userKey);
+        if (count != null) query.limit(count);
+        if (cursorString != null && cursorString != "") {
+            query = query.startAt(Cursor.fromWebSafeString(cursorString));
+        }
+
+        List<IngredientToBuy> ingredientToBuyList = new ArrayList<>();
+        QueryResultIterator<IngredientToBuy> iterator = query.iterator();
+        int num = 0;
+        while (iterator.hasNext()) {
+            ingredientToBuyList.add(iterator.next());
+            if (count != null) {
+                num++;
+                if (num == count) break;
+            }
+        }
+
+        if (cursorString != null && cursorString != "") {
+            Cursor cursor = iterator.getCursor();
+            if (cursor != null) {
+                cursorString = cursor.toWebSafeString();
+            }
+        }
+        return CollectionResponse.<IngredientToBuy>builder().setItems(ingredientToBuyList).setNextPageToken(cursorString).build();
+    }
+
+    @ApiMethod(name = "generateBuyList", httpMethod = HttpMethod.POST)
+    public void generateBuyList(Recipe recipe, @Named("username") String username) {
+        List<IngredientToBuy> ingredientToBuys = new ArrayList<>();
+
+    }
     /* RECIPE RELATED METHODS
      *
      */
@@ -88,7 +149,7 @@ public class Endpoint {
     /**
      * Update the recipe in the database and returns it.
      *
-     * @param recipe The Recipe to update
+     * @param recipe   The Recipe to update
      * @param username The username of user who created te recipe
      * @return Updated Recipe
      * @throws NotFoundException
@@ -107,7 +168,7 @@ public class Endpoint {
     /**
      * Delete a recipe from the datatbase
      *
-     * @param recipe The recipe to delete
+     * @param recipe   The recipe to delete
      * @param username The username of user who created te recipe
      * @throws NotFoundException
      */
@@ -123,9 +184,9 @@ public class Endpoint {
     /**
      * Retrieves all of the recipes created by a user
      *
-     * @param username The username of the user who created the recipe
+     * @param username     The username of the user who created the recipe
      * @param cursorString
-     * @param count An optional Integer used to limit the number of recipes returned
+     * @param count        An optional Integer used to limit the number of recipes returned
      * @return A CollectionResponse of recipes, usable as a List
      */
     @ApiMethod(name = "retrieveRecipeByUser", httpMethod = HttpMethod.GET)
@@ -178,7 +239,7 @@ public class Endpoint {
      * Insert an ingredient into the database.
      *
      * @param ingredient The ingredient object to add to the database
-     * @param username The username of the user who owns the ingredient
+     * @param username   The username of the user who owns the ingredient
      * @throws ConflictException In case the ingredient already exist
      */
     @ApiMethod(name = "insertIngredient")
@@ -198,7 +259,7 @@ public class Endpoint {
      * Private method of the endpoint
      *
      * @param ingredient The ingredient's name to save
-     * @param username The username of the user
+     * @param username   The username of the user
      */
     private void saveIngredientInDictionary(Ingredient ingredient, @Named("username") String username) {
         Key<User> userKey = Key.create(User.class, username);
@@ -231,7 +292,7 @@ public class Endpoint {
      *
      * @param username
      * @param cursorString
-     * @param count An integer used to limit the number of ingredient returned
+     * @param count        An integer used to limit the number of ingredient returned
      * @return A CollectionResponse of ingredient which can be used as a List
      */
     @ApiMethod(name = "listIngredients")
@@ -284,6 +345,7 @@ public class Endpoint {
     @ApiMethod(name = "createUser", httpMethod = HttpMethod.POST)
     public User createUser(User user) throws ConflictException {
         if (findUser(user.getUsername()) == null) {
+
             ofy().save().entity(user).now();
             return user;
         }
@@ -292,6 +354,7 @@ public class Endpoint {
 
     /**
      * Update a User
+     *
      * @param user the user to update
      * @return the updated user
      * @throws NotFoundException In case the user doesn't exist
@@ -355,6 +418,7 @@ public class Endpoint {
 
     /**
      * Private method used by the endpoint to check if a user uses the username/password couple
+     *
      * @param username
      * @param password
      * @return A User

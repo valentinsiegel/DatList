@@ -8,14 +8,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.siegel.datlist.adapters.IngredientAdapter;
 import fr.siegel.datlist.backend.datListApi.DatListApi;
 import fr.siegel.datlist.backend.datListApi.model.Ingredient;
+import fr.siegel.datlist.backend.datListApi.model.IngredientToBuy;
 import fr.siegel.datlist.backend.datListApi.model.Recipe;
 import fr.siegel.datlist.backend.datListApi.model.User;
 import fr.siegel.datlist.services.EndpointAsyncTask;
@@ -27,7 +32,15 @@ public class ViewRecipeActivity extends AppCompatActivity {
     private Recipe mCurrentRecipe;
     private RecyclerView mIngredientListRecycleView;
     private DatListApi mDatListApi;
-    private List<Ingredient> mIngredientList;
+    private List<Ingredient> mRecipeIngredientList;
+    private List<Ingredient> mUserIngredientList;
+    private IngredientAdapter ingredientAdapter;
+    private OnClickListener prepareRecipeListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            addIngredientToBuyList(mUserIngredientList);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +64,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mIngredientListRecycleView.setLayoutManager(layoutManager);
         getIngredientList();
+
     }
 
     @Override
@@ -86,6 +100,11 @@ public class ViewRecipeActivity extends AppCompatActivity {
                 if (recipe != null) {
                     mCurrentRecipe = recipe;
                     initView();
+
+                    ingredientAdapter = new IngredientAdapter(ViewRecipeActivity.this, mCurrentRecipe.getIngredientList(), mUserIngredientList);
+                    mIngredientListRecycleView.setAdapter(ingredientAdapter);
+
+                    ingredientAdapter.notifyDataSetChanged();
                 }
                 super.onPostExecute(recipe);
             }
@@ -93,7 +112,9 @@ public class ViewRecipeActivity extends AppCompatActivity {
     }
 
     public void getIngredientList() {
-        new AsyncTask<Void, Void, List<Ingredient>>() {
+        new AsyncTask<Void, Void, Boolean>() {
+
+            List<Ingredient> ingredientList;
 
             @Override
             protected void onPreExecute() {
@@ -101,22 +122,26 @@ public class ViewRecipeActivity extends AppCompatActivity {
             }
 
             @Override
-            protected List<Ingredient> doInBackground(Void... params) {
+            protected Boolean doInBackground(Void... params) {
                 try {
-                    return mDatListApi.listIngredients(mCurrentUser.getUsername()).execute().getItems();
+                    ingredientList = mDatListApi.listIngredients(mCurrentUser.getUsername()).execute().getItems();
+                    return true;
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return null;
+                    return false;
                 }
             }
 
             @Override
-            protected void onPostExecute(List<Ingredient> ingredientList) {
-                super.onPostExecute(ingredientList);
-                mIngredientList = ingredientList;
-                if (mIngredientList != null) {
-                    mIngredientList = ingredientList;
+            protected void onPostExecute(Boolean success) {
+                super.onPostExecute(success);
+                if (success) {
+                    mUserIngredientList = (ingredientList == null) ? new ArrayList<Ingredient>() : ingredientList;
+
+
                 }
+
+
                 getRecipeDetails();
             }
         }.execute();
@@ -126,10 +151,46 @@ public class ViewRecipeActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.recipe_name_text_view)).setText(mCurrentRecipe.getName());
         ((TextView) findViewById(R.id.recipe_description_text_view)).setText(mCurrentRecipe.getDescription());
 
-        IngredientAdapter ingredientAdapter = new IngredientAdapter(this, mCurrentRecipe.getIngredientList(), mCurrentRecipe, mIngredientList);
-        mIngredientListRecycleView.setAdapter(ingredientAdapter);
 
-        ingredientAdapter.notifyDataSetChanged();
+        findViewById(R.id.prepare_recipe_button).setOnClickListener(prepareRecipeListener);
 
+    }
+
+    private void addIngredientToBuyList(final List<Ingredient> ingredientList) {
+        new AsyncTask<Void, Void, Boolean>() {
+
+            List<Ingredient> userList = ingredientList;
+            List<Ingredient> recipeList = mCurrentRecipe.getIngredientList();
+
+            @Override
+            protected void onPreExecute() {
+
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                for (int i = 0; i < recipeList.size(); i++) {
+                    if (!userList.contains(recipeList.get(i)))
+                        try {
+                            mDatListApi.addIngredientToBuy(mCurrentUser.getUsername(), new IngredientToBuy().setName(recipeList.get(i).getName())).execute();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return false;
+
+                        }
+
+                }
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                if (success)
+                    Toast.makeText(ViewRecipeActivity.this, "Success", Toast.LENGTH_SHORT).show();
+
+                super.onPostExecute(success);
+            }
+        }.execute();
     }
 }

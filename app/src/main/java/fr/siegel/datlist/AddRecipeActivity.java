@@ -37,15 +37,16 @@ public class AddRecipeActivity extends AppCompatActivity {
     private IngredientAdapter ingredientAdapter;
     private String mRecipeName;
     private String mRecipeDescription;
-    private EditText mIngredientName;
+    private AutoCompleteTextView mIngredientNameEdit;
     private OnClickListener addIngredientListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (Utils.checkForEmptyString(mIngredientName.getText().toString())) {
-                ingredientAdapter.addIngredient(new Ingredient().setName(mIngredientName.getText().toString()));
+            if (Utils.checkForEmptyString(mIngredientNameEdit.getText().toString())) {
+                ingredientAdapter.addIngredient(new Ingredient().setName(mIngredientNameEdit.getText().toString()));
             }
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,16 +70,16 @@ public class AddRecipeActivity extends AppCompatActivity {
         mRecipeName = ((EditText) findViewById(R.id.recipe_name)).getText().toString();
         mRecipeDescription = ((EditText) findViewById(R.id.recipe_description)).getText().toString();
 
-        AutoCompleteTextView itemNameEditText = (AutoCompleteTextView) findViewById(R.id.ingredient_name_text_view);
+        mIngredientNameEdit = (AutoCompleteTextView) findViewById(R.id.ingredient_name_text_view);
 
-        String[] ingredients = new String[mCurrentUser.getDictionary().size()];
+        String[] ingredients = new String[(mCurrentUser.getDictionary() == null) ? 0 : mCurrentUser.getDictionary().size()];
         for (int i = 0; i < mCurrentUser.getDictionary().size(); i++) {
             ingredients[i] = mCurrentUser.getDictionary().get(i);
         }
 
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(AddRecipeActivity.this, android.R.layout.simple_list_item_1, ingredients);
-        itemNameEditText.setAdapter(adapter);
+        mIngredientNameEdit.setAdapter(adapter);
 
         RecyclerView mIngredientListRecyclerView = (RecyclerView) findViewById(R.id.ingredient_list);
         mIngredientListRecyclerView.setLayoutManager(new LinearLayoutManager(AddRecipeActivity.this));

@@ -19,20 +19,20 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
 
 
     private Context context;
-    private List<Ingredient> mIngredientList;
+    private List<Ingredient> recipeIngredients;
     private Recipe recipe;
-    private List<Ingredient> ingredientsInStock;
+    private List<Ingredient> userIngredients;
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public IngredientAdapter(List<Ingredient> ingredientList) {
-        this.mIngredientList = ingredientList;
+        this.recipeIngredients = ingredientList;
     }
 
-    public IngredientAdapter(Context context, List<Ingredient> ingredientList, Recipe recipe, List<Ingredient> ingredientsInStock) {
+    public IngredientAdapter(Context context, List<Ingredient> recipeIngredients, List<Ingredient> userIngredients) {
         this.context = context;
-        this.mIngredientList = ingredientList;
+        this.recipeIngredients = recipeIngredients;
         this.recipe = recipe;
-        this.ingredientsInStock = ingredientsInStock;
+        this.userIngredients = userIngredients;
     }
 
     // Create new views (invoked by the layout manager)
@@ -52,22 +52,28 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-/*        if(ingredientsInStock != null)
+/*        if(userIngredients != null)
             for (int i = 0; i < getItemCount(); i++){
-                for(int j = 0; j < ingredientsInStock.size(); j++){
-                    if(!mIngredientList.get(position).equals(ingredientsInStock.get(j)))
+                for(int j = 0; j < userIngredients.size(); j++){
+                    if(!recipeIngredients.get(position).equals(userIngredients.get(j)))
                         holder.mLinearLayout.setBackgroundColor(Color.parseColor("#F44336"));
                 }
 
             }*/
-        if (ingredientsInStock != null) {
-            for (int i = 0; i < ingredientsInStock.size(); i++) {
-                if (mIngredientList.get(position).equals(ingredientsInStock.get(i)))
-                    holder.mLinearLayout.setBackgroundColor(Color.parseColor("#F44336"));
+        if (userIngredients != null) {
+     /*        for (int i = 0; i < recipeIngredients.size(); i++) {
+                Ingredient ingredient = recipeIngredients.get(i);*/
+            if (!userIngredients.contains(recipeIngredients.get(position))) {
+                holder.mLinearLayout.setBackgroundColor(Color.parseColor("#F44336"));
+
+                /**/
             }
         }
 
-        holder.mTextView.setText(mIngredientList.get(position).getName());
+        //}
+        ///}
+        holder.mTextView.setText(recipeIngredients.get(position).getName());
+
 
     }
 
@@ -75,14 +81,14 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        if (mIngredientList != null)
-            return mIngredientList.size();
+        if (recipeIngredients != null)
+            return recipeIngredients.size();
         return 0;
     }
 
 
     public void addIngredient(Ingredient ingredient) {
-        this.mIngredientList.add(0, ingredient);
+        this.recipeIngredients.add(0, ingredient);
         this.notifyItemInserted(0);
     }
 

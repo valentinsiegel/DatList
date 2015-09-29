@@ -13,7 +13,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,7 +29,7 @@ public class ItemsFragment extends Fragment {
     private RecyclerView mItemListRecyclerView;
 
     private DatListApi mDatListApi;
-    private EditText mEditText;
+    private AutoCompleteTextView mEditText;
     private User mCurrentUser;
     private List<Ingredient> ingredientList;
     private OnClickListener addIngredient = new OnClickListener() {
@@ -61,7 +60,7 @@ public class ItemsFragment extends Fragment {
         mItemListRecyclerView = (RecyclerView) view.findViewById(R.id.item_list);
 
 
-        AutoCompleteTextView itemNameEditText = (AutoCompleteTextView) view.findViewById(R.id.ingredient_name_edit_text);
+        mEditText = (AutoCompleteTextView) view.findViewById(R.id.ingredient_name_edit_text);
 
         String[] ingredients = new String[mCurrentUser.getDictionary().size()];
         for (int i = 0; i < mCurrentUser.getDictionary().size(); i++) {
@@ -70,7 +69,7 @@ public class ItemsFragment extends Fragment {
 
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, ingredients);
-        itemNameEditText.setAdapter(adapter);
+        mEditText.setAdapter(adapter);
 
         view.findViewById(R.id.button_add_items).setOnClickListener(addIngredient);
 
