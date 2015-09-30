@@ -63,11 +63,28 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
         if (userIngredients != null) {
      /*        for (int i = 0; i < recipeIngredients.size(); i++) {
                 Ingredient ingredient = recipeIngredients.get(i);*/
-            if (!userIngredients.contains(recipeIngredients.get(position))) {
+           /* if (!userIngredients.contains(recipeIngredients.get(position))) {
                 holder.mLinearLayout.setBackgroundColor(Color.parseColor("#F44336"));
 
-                /**/
+                *//**//*
+            }*/
+
+            //
+      /*      boolean ok = false;
+            for (int i = 0; i<recipeIngredients.size(); i++){
+                for (int j = 0; j<userIngredients.size(); j++){
+                    if(recipeIngredients.get(i).getName().equals(userIngredients.get(j).getName()))
+                        ok = true;
+                }
+            }*/
+            holder.mLinearLayout.setBackgroundColor(Color.parseColor("#F44336"));
+            for (int i = 0; i < userIngredients.size(); i++) {
+                if (userIngredients.get(i).getName().equals(recipeIngredients.get(position).getName())) {
+                    holder.mLinearLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                }
             }
+
+            // holder.mLinearLayout.setBackgroundColor((ok ? (Color.parseColor("#FFFFFF")) : Color.parseColor("#F44336")));
         }
 
         //}

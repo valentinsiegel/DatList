@@ -18,6 +18,7 @@ import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.VoidWork;
 import com.googlecode.objectify.cmd.Query;
 
 import java.util.ArrayList;
@@ -44,6 +45,34 @@ import static fr.siegel.datlist.api.OfyService.ofy;
 )
 public class Endpoint {
 
+    public Endpoint() {
+
+    }
+
+    @ApiMethod(name = "buyIngredient", httpMethod = HttpMethod.POST)
+    public void buyIngredient(final IngredientToBuy ingredientToBuy, @Named("username") final String username) throws NotFoundException {
+
+
+        // If you don't need to return a value, you can use VoidWork
+
+        ofy().transact(new VoidWork() {
+
+            @Override
+            public void vrun() {
+
+                Ingredient ingredient = new Ingredient();
+
+                ingredient.setUserKey(username);
+                ingredientToBuy.setUserKey(username);
+
+                ingredient.setName(ingredientToBuy.getName());
+
+                ofy().delete().entity(ingredientToBuy).now();
+                ofy().save().entity(ingredient);
+            }
+        });
+
+    }
     /*
     INGREDIENT TO BUY RELATED METHODS
      */

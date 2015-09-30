@@ -161,7 +161,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
             List<Ingredient> userList = ingredientList;
             List<Ingredient> recipeList = mCurrentRecipe.getIngredientList();
-
+            List<Ingredient> notFound = recipeList;
             @Override
             protected void onPreExecute() {
 
@@ -171,6 +171,26 @@ public class ViewRecipeActivity extends AppCompatActivity {
             @Override
             protected Boolean doInBackground(Void... params) {
                 for (int i = 0; i < recipeList.size(); i++) {
+                    boolean found = false;
+                    for (int j = 0; j < userList.size(); j++) {
+                        if (recipeList.get(i).getName().equals(userList.get(j).getName())) {
+                            notFound.remove(recipeList.get(i));
+                        }
+                    }
+                    for (int k = 0; k < notFound.size(); k++) {
+                        try {
+                            mDatListApi.addIngredientToBuy(mCurrentUser.getUsername(), new IngredientToBuy().setName(notFound.get(k).getName())).execute();
+                            return true;
+                        } catch (IOException e) {
+
+                            e.printStackTrace();
+                            return false;
+
+                        }
+                    }
+
+                }
+                /*for (int i = 0; i < recipeList.size(); i++) {
                     if (!userList.contains(recipeList.get(i)))
                         try {
                             mDatListApi.addIngredientToBuy(mCurrentUser.getUsername(), new IngredientToBuy().setName(recipeList.get(i).getName())).execute();
@@ -180,7 +200,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
                         }
 
-                }
+                }*/
                 return true;
             }
 
