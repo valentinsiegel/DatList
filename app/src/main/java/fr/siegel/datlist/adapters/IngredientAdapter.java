@@ -1,7 +1,6 @@
 package fr.siegel.datlist.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,6 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
     public IngredientAdapter(Context context, List<Ingredient> recipeIngredients, List<Ingredient> userIngredients) {
         this.context = context;
         this.recipeIngredients = recipeIngredients;
-        this.recipe = recipe;
         this.userIngredients = userIngredients;
     }
 
@@ -50,48 +48,19 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-/*        if(userIngredients != null)
-            for (int i = 0; i < getItemCount(); i++){
-                for(int j = 0; j < userIngredients.size(); j++){
-                    if(!recipeIngredients.get(position).equals(userIngredients.get(j)))
-                        holder.mLinearLayout.setBackgroundColor(Color.parseColor("#F44336"));
-                }
-
-            }*/
         if (userIngredients != null) {
-     /*        for (int i = 0; i < recipeIngredients.size(); i++) {
-                Ingredient ingredient = recipeIngredients.get(i);*/
-           /* if (!userIngredients.contains(recipeIngredients.get(position))) {
-                holder.mLinearLayout.setBackgroundColor(Color.parseColor("#F44336"));
 
-                *//**//*
-            }*/
+            holder.mLinearLayout.setBackgroundColor(context.getResources().getColor(R.color.red));
+            holder.mTextView.setTextColor(context.getResources().getColor(R.color.white));
 
-            //
-      /*      boolean ok = false;
-            for (int i = 0; i<recipeIngredients.size(); i++){
-                for (int j = 0; j<userIngredients.size(); j++){
-                    if(recipeIngredients.get(i).getName().equals(userIngredients.get(j).getName()))
-                        ok = true;
-                }
-            }*/
-            holder.mLinearLayout.setBackgroundColor(Color.parseColor("#F44336"));
             for (int i = 0; i < userIngredients.size(); i++) {
                 if (userIngredients.get(i).getName().equals(recipeIngredients.get(position).getName())) {
-                    holder.mLinearLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    holder.mLinearLayout.setBackgroundColor(context.getResources().getColor(R.color.white));
+                    holder.mTextView.setTextColor(context.getResources().getColor(R.color.dark_blue));
                 }
             }
-
-            // holder.mLinearLayout.setBackgroundColor((ok ? (Color.parseColor("#FFFFFF")) : Color.parseColor("#F44336")));
         }
-
-        //}
-        ///}
         holder.mTextView.setText(recipeIngredients.get(position).getName());
-
-
     }
 
 

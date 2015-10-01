@@ -41,6 +41,7 @@ public class ListFragment extends Fragment {
                     break;
                 case R.id.button_add_items:
                     addIngredientToBuy();
+                    mEditText.setText("");
                     break;
             }
         }
@@ -152,8 +153,6 @@ public class ListFragment extends Fragment {
 
                 ingredientToBuy = new IngredientToBuy().setName(mEditText.getText().toString());
                 super.onPreExecute();
-
-
             }
 
             @Override
@@ -171,8 +170,7 @@ public class ListFragment extends Fragment {
             protected void onPostExecute(Boolean success) {
                 if (success) {
 
-
-                    retrieveIngredientToBuy();
+                    mRecyclerViewAdapter.addIngredient(ingredientToBuy);
                 }
 
                 super.onPostExecute(success);
@@ -183,8 +181,6 @@ public class ListFragment extends Fragment {
 
     public void buyIngredient(final IngredientToBuy ingredientToBuy) {
         new AsyncTask<Void, Void, Boolean>() {
-
-            List<IngredientToBuy> ingredientToBuyList;
 
             @Override
             protected void onPreExecute() {

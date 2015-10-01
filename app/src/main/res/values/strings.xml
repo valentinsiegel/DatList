@@ -54,4 +54,8 @@
     <string name="activity_title_add_recipe_activity">Create your recipe</string>
     <string name="add_recipe_dialog_username_conflict_title">Can\'t create a new recipe</string>
     <string name="add_recipe_dialog_username_conflict_message">You already created a recipe with the same name.</string>
+    <string name="fragment_title_list">Buy These</string>
+    <string name="fragment_title_items">You Got These</string>
+    <string name="fragment_title_recipes">Your Recipes</string>
+    <string name="activity_title_settings">Your Settings</string>
 </resources>

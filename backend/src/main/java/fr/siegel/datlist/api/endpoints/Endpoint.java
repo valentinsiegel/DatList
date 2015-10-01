@@ -49,11 +49,9 @@ public class Endpoint {
 
     }
 
+
     @ApiMethod(name = "buyIngredient", httpMethod = HttpMethod.POST)
     public void buyIngredient(final IngredientToBuy ingredientToBuy, @Named("username") final String username) throws NotFoundException {
-
-
-        // If you don't need to return a value, you can use VoidWork
 
         ofy().transact(new VoidWork() {
 
@@ -71,7 +69,6 @@ public class Endpoint {
                 ofy().save().entity(ingredient);
             }
         });
-
     }
     /*
     INGREDIENT TO BUY RELATED METHODS

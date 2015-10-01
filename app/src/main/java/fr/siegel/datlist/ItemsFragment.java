@@ -32,6 +32,7 @@ public class ItemsFragment extends Fragment {
     private AutoCompleteTextView mEditText;
     private User mCurrentUser;
     private List<Ingredient> ingredientList;
+    private IngredientAdapter mIngredientAdapter;
     private OnClickListener addIngredient = new OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -120,7 +121,8 @@ public class ItemsFragment extends Fragment {
             protected void onPostExecute(Boolean success) {
                 if (success) {
                     retrieveUserData(mCurrentUser.getUsername());
-                    refreshIngredientList();
+                    mIngredientAdapter.addIngredient(ingredient);
+
                 }
 
                 super.onPostExecute(success);
@@ -184,9 +186,9 @@ public class ItemsFragment extends Fragment {
                 super.onPostExecute(ingredientList);
                 ItemsFragment.this.ingredientList = ingredientList;
                 if (ItemsFragment.this.ingredientList != null) {
-                    IngredientAdapter ingredientAdapter = new IngredientAdapter(ItemsFragment.this.ingredientList);
-                    mItemListRecyclerView.setAdapter(ingredientAdapter);
-                    ingredientAdapter.notifyDataSetChanged();
+                    mIngredientAdapter = new IngredientAdapter(ItemsFragment.this.ingredientList);
+                    mItemListRecyclerView.setAdapter(mIngredientAdapter);
+                    mIngredientAdapter.notifyDataSetChanged();
                 }
             }
         }.execute();

@@ -43,6 +43,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         public void onClick(View v) {
             if (Utils.checkForEmptyString(mIngredientNameEdit.getText().toString())) {
                 ingredientAdapter.addIngredient(new Ingredient().setName(mIngredientNameEdit.getText().toString()));
+                mIngredientNameEdit.setText("");
             }
         }
     };

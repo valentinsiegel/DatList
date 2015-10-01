@@ -60,6 +60,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
         mDatListApi = EndpointAsyncTask.getApi();
 
+
         mIngredientListRecycleView = (RecyclerView) findViewById(R.id.view_recipe_ingredient_list);
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mIngredientListRecycleView.setLayoutManager(layoutManager);
@@ -190,17 +191,6 @@ public class ViewRecipeActivity extends AppCompatActivity {
                     }
 
                 }
-                /*for (int i = 0; i < recipeList.size(); i++) {
-                    if (!userList.contains(recipeList.get(i)))
-                        try {
-                            mDatListApi.addIngredientToBuy(mCurrentUser.getUsername(), new IngredientToBuy().setName(recipeList.get(i).getName())).execute();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            return false;
-
-                        }
-
-                }*/
                 return true;
             }
 

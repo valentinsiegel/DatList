@@ -1,6 +1,5 @@
 package fr.siegel.datlist.adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +14,6 @@ import fr.siegel.datlist.backend.datListApi.model.IngredientToBuy;
 
 public class IngredientToBuyAdapter extends RecyclerView.Adapter<IngredientToBuyAdapter.ViewHolder> {
 
-
-    private Context context;
     private List<IngredientToBuy> ingredientToBuyList;
 
     // Provide a suitable constructor (depends on the kind of dataset)
@@ -39,23 +36,7 @@ public class IngredientToBuyAdapter extends RecyclerView.Adapter<IngredientToBuy
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-/*        if(userIngredients != null)
-            for (int i = 0; i < getItemCount(); i++){
-                for(int j = 0; j < userIngredients.size(); j++){
-                    if(!recipeIngredients.get(position).equals(userIngredients.get(j)))
-                        holder.mLinearLayout.setBackgroundColor(Color.parseColor("#F44336"));
-                }
-
-            }*/
-
-
-        //}
-        ///}
         holder.mTextView.setText(ingredientToBuyList.get(position).getName());
-
-
     }
 
 

@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             fragmentManager.beginTransaction()
                                     .replace(R.id.frame_content, listFragment)
                                     .commit();
+                            getSupportActionBar().setTitle(R.string.fragment_title_list);
                             return true;
                         case R.id.drawer_layout_recipes:
                             Fragment recipesFragment = new RecipesFragment();
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             fragmentManager.beginTransaction()
                                     .replace(R.id.frame_content, recipesFragment)
                                     .commit();
+                            getSupportActionBar().setTitle(R.string.fragment_title_recipes);
                             return true;
                         case R.id.drawer_layout_items:
                             Fragment itemsFragment = new ItemsFragment();
@@ -106,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                             fragmentManager.beginTransaction()
                                     .replace(R.id.frame_content, itemsFragment)
                                     .commit();
+                            getSupportActionBar().setTitle(R.string.fragment_title_items);
                             return true;
                         default:
                             return true;
@@ -173,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
