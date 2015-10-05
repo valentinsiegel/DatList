@@ -26,6 +26,7 @@ import java.util.List;
 
 import fr.siegel.datlist.api.model.Ingredient;
 import fr.siegel.datlist.api.model.IngredientToBuy;
+import fr.siegel.datlist.api.model.IngredientToBuyList;
 import fr.siegel.datlist.api.model.Recipe;
 import fr.siegel.datlist.api.model.User;
 
@@ -77,14 +78,25 @@ public class Endpoint {
     /**
      * Add an Item to buy into the database
      *
-     * @param ingredientToBuy
+     * @param ingredientToBuyList
      * @param username
      * @throws ConflictException
      */
     @ApiMethod(name = "addIngredientToBuy")
-    public void addIngredientToBuy(@Named("username") String username, IngredientToBuy ingredientToBuy) {
-        ingredientToBuy.setUserKey(username);
-        ofy().save().entity(ingredientToBuy).now();
+    public void addIngredientToBuy(@Named("username") final String username, final IngredientToBuyList ingredientToBuyList) {
+
+        ofy().transact(new VoidWork() {
+            @Override
+            public void vrun() {
+
+                for (int i = 0; i < ingredientToBuyList.ingredientToBuyList.size(); i++) {
+                    IngredientToBuy ingredientToBuy = new IngredientToBuy();
+                    ingredientToBuy.setUserKey(username);
+                    ingredientToBuy.setName(ingredientToBuyList.ingredientToBuyList.get(i).getName());
+                    ofy().save().entity(ingredientToBuy);
+                }
+            }
+        });
     }
 
     /**

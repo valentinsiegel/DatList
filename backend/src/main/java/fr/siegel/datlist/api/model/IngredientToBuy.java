@@ -27,6 +27,10 @@ public class IngredientToBuy {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setUserKey(String username) {
         this.userKey = Key.create(User.class, username);
     }

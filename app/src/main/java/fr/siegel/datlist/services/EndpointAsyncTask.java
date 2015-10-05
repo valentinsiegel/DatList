@@ -26,7 +26,8 @@ public class EndpointAsyncTask {
                     //https://datlist-1035.appspot.com/_ah/api/
                     //http://10.0.3.2:8080/_ah/api/
                     .setRootUrl("https://datlist-1035.appspot.com/_ah/api/")
-                            //.setRootUrl("http://10.0.3.2:8080/_ah/api/")
+                            //.setRootUrl("http://169.254.80.80:8080/_ah/api/")
+                            // .setRootUrl("http://10.0.3.2:8080/_ah/api/")
                     .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                         @Override
                         public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
@@ -39,49 +40,4 @@ public class EndpointAsyncTask {
 
         return mDatListEndpoint;
     }
-
-
-
-  /*  public void listIngredients() {
-        new AsyncTask<Void, Void, List<Ingredient>>() {
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
-
-            @Override
-            protected List<Ingredient> doInBackground(Void... params) {
-                try {
-                    return mDatListEndpoint.listIngredients().execute().getItems();
-                } catch (IOException e) {
-                    return Collections.EMPTY_LIST;
-                }
-            }
-
-
-            @Override
-            protected void onPostExecute(List<Ingredient> ingredients) {
-                super.onPostExecute(ingredients);
-
-                    IngredientAdapter ingredientsAdapter = new IngredientAdapter(ingredients);
-                recyclerView.setAdapter(ingredientsAdapter);
-            }
-        }.execute();
-    }
-
-    public void insertIngredient(final Ingredient ingredient){
-        new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Void... params) {
-                try {
-                    mDatListEndpoint.insertIngredient(ingredient).execute();
-                    return true;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            }
-        }.execute();
-    }*/
 }

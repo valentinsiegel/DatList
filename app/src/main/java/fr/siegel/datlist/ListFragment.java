@@ -21,6 +21,7 @@ import fr.siegel.datlist.adapters.IngredientToBuyAdapter;
 import fr.siegel.datlist.adapters.RecyclerItemClickListener;
 import fr.siegel.datlist.backend.datListApi.DatListApi;
 import fr.siegel.datlist.backend.datListApi.model.IngredientToBuy;
+import fr.siegel.datlist.backend.datListApi.model.IngredientToBuyList;
 import fr.siegel.datlist.backend.datListApi.model.User;
 import fr.siegel.datlist.services.EndpointAsyncTask;
 
@@ -37,8 +38,6 @@ public class ListFragment extends Fragment {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.button_get_items:
-                    break;
                 case R.id.button_add_items:
                     addIngredientToBuy();
                     mEditText.setText("");
@@ -147,18 +146,28 @@ public class ListFragment extends Fragment {
         new AsyncTask<Void, Void, Boolean>() {
 
             IngredientToBuy ingredientToBuy;
+            private IngredientToBuyList ingredientToBuyList;
+            private ArrayList<String> recipeName;
 
             @Override
             protected void onPreExecute() {
 
                 ingredientToBuy = new IngredientToBuy().setName(mEditText.getText().toString());
+                recipeName = new ArrayList<>();
+                recipeName.add(mEditText.getText().toString());
+
+                ingredientToBuyList = new IngredientToBuyList();
+                ingredientToBuyList.setIngredientToBuyList(new ArrayList<IngredientToBuy>());
+                ingredientToBuyList.getIngredientToBuyList().add(new IngredientToBuy().setName(mEditText.getText().toString()));
+
                 super.onPreExecute();
             }
 
             @Override
             protected Boolean doInBackground(Void... params) {
                 try {
-                    datListApi.addIngredientToBuy(mCurrentUser.getUsername(), ingredientToBuy).execute();
+
+                    datListApi.addIngredientToBuy(mCurrentUser.getUsername(), ingredientToBuyList).execute();
                     return true;
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -13,6 +13,8 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,7 @@ import fr.siegel.datlist.adapters.IngredientAdapter;
 import fr.siegel.datlist.backend.datListApi.DatListApi;
 import fr.siegel.datlist.backend.datListApi.model.Ingredient;
 import fr.siegel.datlist.backend.datListApi.model.IngredientToBuy;
+import fr.siegel.datlist.backend.datListApi.model.IngredientToBuyList;
 import fr.siegel.datlist.backend.datListApi.model.Recipe;
 import fr.siegel.datlist.backend.datListApi.model.User;
 import fr.siegel.datlist.services.EndpointAsyncTask;
@@ -162,43 +165,43 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
             List<Ingredient> userList = ingredientList;
             List<Ingredient> recipeList = mCurrentRecipe.getIngredientList();
-            List<Ingredient> notFound = recipeList;
+            IngredientToBuyList notFound = new IngredientToBuyList();
+
+
             @Override
             protected void onPreExecute() {
+                notFound.setIngredientToBuyList(new ArrayList<IngredientToBuy>());
+                for (int i = 0; i < recipeList.size(); i++) {
+                    notFound.getIngredientToBuyList().add(i, new IngredientToBuy().setName(recipeList.get(i).getName()));
+                }
 
-                super.onPreExecute();
             }
 
             @Override
             protected Boolean doInBackground(Void... params) {
                 for (int i = 0; i < recipeList.size(); i++) {
-                    boolean found = false;
                     for (int j = 0; j < userList.size(); j++) {
                         if (recipeList.get(i).getName().equals(userList.get(j).getName())) {
                             notFound.remove(recipeList.get(i));
                         }
                     }
-                    for (int k = 0; k < notFound.size(); k++) {
-                        try {
-                            mDatListApi.addIngredientToBuy(mCurrentUser.getUsername(), new IngredientToBuy().setName(notFound.get(k).getName())).execute();
-                            return true;
-                        } catch (IOException e) {
-
-                            e.printStackTrace();
-                            return false;
-
-                        }
-                    }
+                }
+                try {
+                    mDatListApi.addIngredientToBuy(mCurrentUser.getUsername(), notFound).execute();
+                    return true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    GoogleJsonResponseException googleJsonResponseException = (GoogleJsonResponseException) e;
+                    String errorMessage = googleJsonResponseException.getStatusMessage();
+                    return false;
 
                 }
-                return true;
             }
 
             @Override
             protected void onPostExecute(Boolean success) {
                 if (success)
                     Toast.makeText(ViewRecipeActivity.this, "Success", Toast.LENGTH_SHORT).show();
-
                 super.onPostExecute(success);
             }
         }.execute();
