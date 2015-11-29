@@ -48,7 +48,6 @@ public class IngredientToBuyAdapter extends RecyclerView.Adapter<IngredientToBuy
         return 0;
     }
 
-
     public void addIngredient(IngredientToBuy ingredientToBuy) {
         this.ingredientToBuyList.add(0, ingredientToBuy);
         this.notifyItemInserted(0);
@@ -71,3 +70,5 @@ public class IngredientToBuyAdapter extends RecyclerView.Adapter<IngredientToBuy
         }
     }
 }
+
+

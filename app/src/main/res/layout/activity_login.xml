@@ -10,6 +10,7 @@
         layout="@layout/toolbar" />
 
     <LinearLayout
+        android:id="@+id/login_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -52,7 +53,7 @@
         </android.support.design.widget.TextInputLayout>
 
         <TextView
-            android:id="@+id/password_error"
+            android:id="@+id/password_error_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/login_password_error"
@@ -60,7 +61,7 @@
             android:visibility="gone" />
 
         <CheckBox
-            android:id="@+id/login_show_password_checkbox"
+            android:id="@+id/show_password_checkbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/login_show_password" />
@@ -73,6 +74,18 @@
             android:layout_marginTop="16dp"
             android:gravity="center" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="72dp"
+            android:layout_height="72dp" />
     </LinearLayout>
 
 </LinearLayout>

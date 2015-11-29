@@ -21,6 +21,8 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.VoidWork;
 import com.googlecode.objectify.cmd.Query;
 
+import org.omg.PortableInterceptor.INACTIVE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -280,7 +282,7 @@ public class Endpoint {
      * @param username   The username of the user who owns the ingredient
      * @throws ConflictException In case the ingredient already exist
      */
-    @ApiMethod(name = "insertIngredient")
+    @ApiMethod(name = "insertIngredient", httpMethod = HttpMethod.PUT)
     public void insertIngredient(Ingredient ingredient, @Named("username") String username) throws ConflictException {
         ingredient.setUserKey(username);
         saveIngredientInDictionary(ingredient, username);
@@ -290,6 +292,14 @@ public class Endpoint {
             }
         }
         ofy().save().entity(ingredient).now();
+    }
+
+    @ApiMethod(name = "deleteIngredient", httpMethod = HttpMethod.DELETE)
+    public void deleteIngredient(@Named("username") String username, @Named("ingredientName") String ingredient) throws NotFoundException {
+        Key<User> userKey = Key.create(User.class, username);
+        Key<Ingredient> ingredientKey = Key.create(userKey, Ingredient.class, ingredient);
+        Ingredient ingredientToDelete = ofy().load().type(Ingredient.class).filterKey("=", ingredientKey).first().now();
+        ofy().delete().entity(ingredientToDelete).now();
     }
 
     /**

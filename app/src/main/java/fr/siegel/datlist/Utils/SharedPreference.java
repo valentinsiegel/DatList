@@ -13,8 +13,8 @@ public class SharedPreference
 {
     static final String PREF_USER_ID = "userId";
 
-    static SharedPreferences getSharedPreferences(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
+    static SharedPreferences getSharedPreferences(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     public static void setUserId(Context ctx, String userId)

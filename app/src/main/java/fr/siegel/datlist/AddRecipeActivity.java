@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -22,6 +21,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import fr.siegel.datlist.Utils.Utils;
 import fr.siegel.datlist.adapters.IngredientAdapter;
 import fr.siegel.datlist.backend.datListApi.DatListApi;
@@ -36,24 +38,29 @@ public class AddRecipeActivity extends AppCompatActivity {
     private List<Ingredient> mIngredientList = null;
     private User mCurrentUser;
     private IngredientAdapter ingredientAdapter;
-    private String mRecipeName;
-    private String mRecipeDescription;
-    private AutoCompleteTextView mIngredientNameEdit;
-    private OnClickListener addIngredientListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (Utils.checkForEmptyString(mIngredientNameEdit.getText().toString())) {
-                ingredientAdapter.addIngredient(new Ingredient().setName(mIngredientNameEdit.getText().toString()));
-                mIngredientNameEdit.setText("");
-            }
-        }
-    };
+    private String recipeName;
+    private String recipeDescription;
 
+
+    @Bind(R.id.ingredient_name_text_view) AutoCompleteTextView ingredientNameEditText;
+    @Bind(R.id.ingredient_list) RecyclerView ingredientList;
+/*    @Bind(R.id.recipe_name) EditText recipeName;
+    @Bind(R.id.recipe_description) EditText recipeDescription;*/
+
+    @OnClick(R.id.add_ingredient)
+    public void submit(View view){
+        if (Utils.checkForEmptyString(ingredientNameEditText.getText().toString())) {
+            // ingredientAdapter.addIngredient(new Ingredient().setName(ingredientNameEditText.getText().toString()), );
+            ingredientNameEditText.setText("");
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_recipe);
+        ButterKnife.bind(this);
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -69,10 +76,8 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mRecipeName = ((EditText) findViewById(R.id.recipe_name)).getText().toString();
-        mRecipeDescription = ((EditText) findViewById(R.id.recipe_description)).getText().toString();
-
-        mIngredientNameEdit = (AutoCompleteTextView) findViewById(R.id.ingredient_name_text_view);
+        recipeName = ((EditText) findViewById(R.id.recipe_name)).getText().toString();
+        recipeDescription = ((EditText) findViewById(R.id.recipe_description)).getText().toString();
 
         String[] ingredients = new String[(mCurrentUser.getDictionary() == null) ? 0 : mCurrentUser.getDictionary().size()];
         for (int i = 0; i < mCurrentUser.getDictionary().size(); i++) {
@@ -81,15 +86,12 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(AddRecipeActivity.this, android.R.layout.simple_list_item_1, ingredients);
-        mIngredientNameEdit.setAdapter(adapter);
+        ingredientNameEditText.setAdapter(adapter);
 
-        RecyclerView mIngredientListRecyclerView = (RecyclerView) findViewById(R.id.ingredient_list);
-        mIngredientListRecyclerView.setLayoutManager(new LinearLayoutManager(AddRecipeActivity.this));
+        ingredientList.setLayoutManager(new LinearLayoutManager(AddRecipeActivity.this));
         ingredientAdapter = new IngredientAdapter(mIngredientList);
-        mIngredientListRecyclerView.setAdapter(ingredientAdapter);
+        ingredientList.setAdapter(ingredientAdapter);
         ingredientAdapter.notifyDataSetChanged();
-
-        findViewById(R.id.add_ingredient).setOnClickListener(addIngredientListener);
     }
 
     @Override
@@ -127,7 +129,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             @Override
             protected Boolean doInBackground(Void... params) {
                 try {
-                    datListApi.createRecipe(mCurrentUser.getUsername(), new Recipe().setName(mRecipeName).setDescription(mRecipeDescription).setIngredientList(mIngredientList)).execute();
+                    datListApi.createRecipe(mCurrentUser.getUsername(), new Recipe().setName(recipeName).setDescription(recipeDescription).setIngredientList(mIngredientList)).execute();
                     return true;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -206,7 +208,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         initView();
 
-        if (!Utils.checkForEmptyString(mRecipeName)) {
+        if (!Utils.checkForEmptyString(recipeName)) {
             findViewById(R.id.recipe_name_error).setVisibility(View.VISIBLE);
             errors = true;
         } else {

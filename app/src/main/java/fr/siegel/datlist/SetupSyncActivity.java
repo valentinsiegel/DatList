@@ -6,34 +6,35 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import fr.siegel.datlist.Utils.Constants;
+import fr.siegel.datlist.constants.Intents;
 
 public class SetupSyncActivity extends AppCompatActivity {
 
-    private OnClickListener onClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(SetupSyncActivity.this, LoginActivity.class);
-            switch (v.getId()) {
-                case R.id.login_button:
-                    intent.putExtra("CreateAccount", false);
-                    break;
-                case R.id.create_account_button:
-                    intent.putExtra("CreateAccount", true);
-                    break;
-            }
-            int REQUEST_EXIT = 0;
-            startActivityForResult(intent, REQUEST_EXIT);
+    @OnClick({R.id.login_button, R.id.create_account_button})
+    public void goNext(View view){
+        Intent intent = new Intent(SetupSyncActivity.this, LoginActivity.class);
+        switch (view.getId()){
+            case R.id.create_account_button:
+                intent.putExtra(Intents.CREATE_ACCOUNT, true);
+                break;
+            case R.id.login_button:
+                intent.putExtra(Intents.CREATE_ACCOUNT, false);
+                break;
         }
-    };
+        startActivityForResult(intent, 0);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_sync);
 
-        findViewById(R.id.login_button).setOnClickListener(onClickListener);
-        findViewById(R.id.create_account_button).setOnClickListener(onClickListener);
+        ButterKnife.bind(this);
+
     }
 
     @Override

@@ -3,30 +3,25 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/item_list"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="@dimen/default_padding">
+        android:layout_height="1dp"
+        android:layout_weight="0.5"
+        android:layout_marginTop="8dp"
+        android:padding="@dimen/default_padding"
+        android:scrollbars="vertical" />
 
-        <AutoCompleteTextView
-            android:id="@+id/ingredient_name_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:completionThreshold="1" />
+    <AutoCompleteTextView
+        android:id="@+id/item_ingredient_name_auto_complete_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:completionThreshold="1"
+        android:singleLine="true"
+        android:textAppearance="@style/Subhead"
+        android:textColor="@color/dark_blue" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/item_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
-            android:scrollbars="vertical" />
-
-    </LinearLayout>
-
-    <include
-        android:id="@+id/button_add_items"
-        layout="@layout/floating_action_button" />
 </LinearLayout>
+

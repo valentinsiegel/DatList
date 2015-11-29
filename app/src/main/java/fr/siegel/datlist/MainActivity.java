@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -117,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 }
             }
         });
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
 
     private void retrieveProfile(final String userId) {

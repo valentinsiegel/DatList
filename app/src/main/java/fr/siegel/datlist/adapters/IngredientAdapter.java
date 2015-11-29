@@ -5,92 +5,109 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.AutoCompleteTextView;
+import android.widget.RelativeLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.siegel.datlist.R;
 import fr.siegel.datlist.backend.datListApi.model.Ingredient;
-import fr.siegel.datlist.backend.datListApi.model.Recipe;
+import fr.siegel.datlist.defs.RecyclerViewType;
 
 public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.ViewHolder> {
 
+    private Context mContext;
+    private List<Ingredient> mRecipeIngredients;
+    private List<Ingredient> mUserIngredients;
+    public ArrayList<View> mLayouts;
 
-    private Context context;
-    private List<Ingredient> recipeIngredients;
-    private Recipe recipe;
-    private List<Ingredient> userIngredients;
-
-    // Provide a suitable constructor (depends on the kind of dataset)
     public IngredientAdapter(List<Ingredient> ingredientList) {
-        this.recipeIngredients = ingredientList;
+        ingredientList.add(new Ingredient());
+        this.mUserIngredients = ingredientList;
+        mLayouts = new ArrayList<>();
     }
 
     public IngredientAdapter(Context context, List<Ingredient> recipeIngredients, List<Ingredient> userIngredients) {
-        this.context = context;
-        this.recipeIngredients = recipeIngredients;
-        this.userIngredients = userIngredients;
+        this.mContext = context;
+        this.mRecipeIngredients = recipeIngredients;
+        userIngredients.add(new Ingredient());
+        this.mUserIngredients = userIngredients;
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
-    public IngredientAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                           int viewType) {
-        // create a new view
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_ingredient, parent, false);
-        // set the view's size, margins, paddings and layout parameters
+    public IngredientAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(viewType == RecyclerViewType.REGULAR_VIEW ? R.layout.item_ingredient : R.layout.item_list_add_button, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        if (userIngredients != null) {
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
 
-            holder.mLinearLayout.setBackgroundColor(context.getResources().getColor(R.color.red));
-            holder.mTextView.setTextColor(context.getResources().getColor(R.color.white));
+        mLayouts.add(position, viewHolder.mLayout);
 
-            for (int i = 0; i < userIngredients.size(); i++) {
-                if (userIngredients.get(i).getName().equals(recipeIngredients.get(position).getName())) {
-                    holder.mLinearLayout.setBackgroundColor(context.getResources().getColor(R.color.white));
-                    holder.mTextView.setTextColor(context.getResources().getColor(R.color.dark_blue));
+        if (viewHolder.getItemViewType() == RecyclerViewType.REGULAR_VIEW) {
+            viewHolder.mTextView.setText(mUserIngredients.get(position).getName());
+        }
+
+        if (mRecipeIngredients != null) {
+
+            viewHolder.mLayout.setBackgroundColor(mContext.getResources().getColor(R.color.red));
+            viewHolder.mTextView.setTextColor(mContext.getResources().getColor(R.color.white));
+
+            for (int i = 0; i < mUserIngredients.size(); i++) {
+                if (mUserIngredients.get(i).getName().equals(mRecipeIngredients.get(position).getName())) {
+                    viewHolder.mLayout.setBackgroundColor(mContext.getResources().getColor(R.color.white));
+                    viewHolder.mTextView.setTextColor(mContext.getResources().getColor(R.color.dark_blue));
                 }
             }
+            viewHolder.mTextView.setText(mRecipeIngredients.get(position).getName());
         }
-        holder.mTextView.setText(recipeIngredients.get(position).getName());
+        viewHolder.mTextView.setText(mUserIngredients.get(position).getName());
     }
 
-
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        if (recipeIngredients != null)
-            return recipeIngredients.size();
-        return 0;
+        return mUserIngredients.size();
     }
 
-
-    public void addIngredient(Ingredient ingredient) {
-        this.recipeIngredients.add(0, ingredient);
-        this.notifyItemInserted(0);
+    @Override
+    public int getItemViewType(int position) {
+        return position == mUserIngredients.size() - 1 ? RecyclerViewType.ADD_VIEW : RecyclerViewType.REGULAR_VIEW;
     }
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
+    public View getTextViewAt(int position){
+        View autoCompleteTextView = mLayouts.get(position);
+        return autoCompleteTextView;
+    }
+
+    public int addIngredient(Ingredient ingredient, int position) {
+        this.mUserIngredients.add(position, ingredient);
+        this.notifyItemInserted(position);
+        return position;
+    }
+
+    public void removeIngredient(int position) {
+        this.mUserIngredients.remove(position);
+        this.notifyItemRemoved(position);
+    }
+
+    public Ingredient getIngredient(int position) {
+        return mUserIngredients.get(position);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        public TextView mTextView;
-        public LinearLayout mLinearLayout;
+
+        public AutoCompleteTextView mTextView;
+        public RelativeLayout mLayout;
 
         public ViewHolder(View view) {
             super(view);
 
-            mLinearLayout = (LinearLayout) view.findViewById(R.id.linear_layout);
-            mTextView = (TextView) view.findViewById(R.id.ingredient_name);
+            mLayout = (RelativeLayout) view.findViewById(R.id.linear_layout);
+            mTextView = (AutoCompleteTextView) view.findViewById(R.id.item_ingredient_name_auto_complete_text_view);
 
         }
     }
